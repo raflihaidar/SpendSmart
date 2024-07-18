@@ -1,4 +1,7 @@
 <script setup lang="ts">
+definePageMeta({
+  name: "transactions",
+});
 import { useTransactionStore } from "~/stores/transaction.store";
 const headerNames = ["Date", "Title", "Category", "Amount", "Actions", " "];
 
@@ -50,34 +53,50 @@ watchEffect(() => {
       </div>
     </section>
     <p class="font-bold text-md mt-10">All Transactions</p>
-    <BaseTable :headerNames="headerNames">
-      <template #tableBody>
-        <tr
-          v-for="(item, index) in transactions"
-          :key="index"
-          class="border-b cursor-pointer border-neutral-200 transition duration-300 ease-in-out hover:bg-neutral-100 dark:border-white/10 dark:hover:bg-neutral-600"
-        >
-          <td
-            class="border-l-8 whitespace-nowrap px-6 py-4 font-medium"
-            :class="item.type_id == 1 ? 'border-green-500' : 'border-red-500'"
+    <section v-if="transactions.length > 0 && transactions">
+      <BaseTable :headerNames="headerNames">
+        <template #tableBody>
+          <tr
+            v-for="(item, index) in transactions"
+            :key="index"
+            class="border-b cursor-pointer border-neutral-200 transition duration-300 ease-in-out hover:bg-neutral-100"
           >
-            {{ item.id }}
-          </td>
-          <td class="whitespace-nowrap px-6 py-4">{{ item.description }}</td>
-          <td class="whitespace-nowrap px-6 py-4">
-            {{ item.category?.name }}
-          </td>
-          <td class="whitespace-nowrap px-6 py-4">Rp{{ item.amount }}</td>
-          <td class="whitespace-nowrap px-6 py-4 font-bold flex gap-x-2">
-            <span>Edit</span>
-            <span class="text-red-500">Delete</span>
-          </td>
-          <td class="whitespace-nowrap px-6 py-4">
-            <input type="checkbox" name="" id="" />
-          </td>
-        </tr>
-      </template>
-    </BaseTable>
-    <BasePagination />
+            <td
+              class="border-l-8 whitespace-nowrap px-6 py-4 font-medium"
+              :class="item.type_id == 1 ? 'border-green-500' : 'border-red-500'"
+            >
+              {{ item.createdAt }}
+            </td>
+            <td class="whitespace-nowrap px-6 py-4">{{ item.description }}</td>
+            <td class="whitespace-nowrap px-6 py-4">
+              {{ item.category?.name }}
+            </td>
+            <td class="whitespace-nowrap px-6 py-4">
+              {{ formatCurrency(item.amount) }}
+              <!-- {{ item.amount }} -->
+            </td>
+            <td class="whitespace-nowrap px-6 py-4 font-bold flex gap-x-2">
+              <span>Edit</span>
+              <span class="text-red-500">Delete</span>
+            </td>
+            <td class="whitespace-nowrap px-6 py-4">
+              <input type="checkbox" name="" id="" />
+            </td>
+          </tr>
+        </template>
+      </BaseTable>
+      <BasePagination />
+    </section>
+    <section class="text-center" v-else>
+      <img
+        src="../../assets/images/55024593_9264820.svg"
+        alt="No Data"
+        class="w-96 mx-auto"
+      />
+      <p class="font-bold text-lg">You don't have any transactions yet.</p>
+      <p class="text-sm">
+        Remember to always review and record every transaction you make.
+      </p>
+    </section>
   </div>
 </template>

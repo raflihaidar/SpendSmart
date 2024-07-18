@@ -1,7 +1,11 @@
 <script setup lang="ts">
+definePageMeta({
+  name: "add",
+});
 import type { ITransaction, TransactionState } from "~/types/ITransction";
 
 const store = useTransactionStore();
+const router = useRouter();
 
 const { categories, type } = storeToRefs(store);
 
@@ -13,6 +17,15 @@ const payload = reactive({
   category_id: null,
 });
 
+const sendData = (paylad: any) => {
+  store.createTransaction(payload);
+  payload.description = null;
+  payload.amount = null;
+  payload.createdAt = null;
+  payload.type_id = null;
+  payload.category_id = null;
+};
+
 onMounted(() => {
   store.getCategories();
   store.getType();
@@ -23,14 +36,19 @@ onMounted(() => {
   <div class="px-5 py-10">
     <nav class="flex justify-between">
       <section class="flex items-center gap-x-2 w-[20%]">
-        <Icon name="material-symbols:arrow-left-alt" size="1.5rem" />
+        <Icon
+          name="material-symbols:arrow-left-alt"
+          size="1.5rem"
+          class="cursor-pointer"
+          @click="router.back"
+        />
         <p class="font-bold">Add Transaction</p>
       </section>
       <section class="flex items-center gap-x-2 w-[30%] place-content-end">
         <!-- <BaseButton icon="ic:outline-remove-red-eye" title="" /> -->
         <BaseButton
           eventType="add"
-          @add="store.createTransaction(payload)"
+          @add="sendData(payload)"
           title="Save and Continue"
           bgColor="bg-color1"
           textColor="text-white"
@@ -40,6 +58,9 @@ onMounted(() => {
     </nav>
 
     <main class="w-full mt-5 grid gap-y-5">
+      <section>
+        <BaseMessages />
+      </section>
       <div class="bg-white shadow-sm rounded-lg px-3 py-4">
         <p class="text-md font-bold mb-2">Category</p>
         <BaseDropDown
@@ -70,15 +91,25 @@ onMounted(() => {
           />
         </section>
         <section class="flex justify-between items-center mt-5">
-          <BaseDatePicker width="w-[40%]" v-model="payload.createdAt" />
-          <BaseDropDown
-            :datas="type"
-            width="w-[20%]"
-            border="border"
-            borderColor="border-color3"
-            class="text-xs"
-            v-model="payload.type_id"
-          />
+          <span class="flex-grow">
+            <BaseLabel name="Date" />
+            <BaseDatePicker
+              width="w-[40%]"
+              v-model="payload.createdAt"
+              class="text-sm px-3 py-2"
+            />
+          </span>
+          <span class="flex-grow">
+            <BaseLabel name="Type" />
+            <BaseDropDown
+              :datas="type"
+              width="w-[20%]"
+              border="border"
+              borderColor="border-color3"
+              class="text-sm px-3 py-2"
+              v-model="payload.type_id"
+            />
+          </span>
         </section>
       </div>
     </main>
