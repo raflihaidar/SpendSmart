@@ -127,10 +127,6 @@ export const useTransactionStore = defineStore("transaction", () => {
       return;
     }
 
-    // if (!transaction) {
-    //   throw Error;
-    // }
-
     try {
       const response = await $fetch("/api/transaction/multi", {
         method: "DELETE",
@@ -144,14 +140,8 @@ export const useTransactionStore = defineStore("transaction", () => {
     }
   };
 
-  const selectedHandler = (item: TransactionInput) => {
-    selectedTransaction.value.push(item);
-    console.log(selectedTransaction.value);
-  };
-
   return {
     transactions,
-    selectedTransaction,
     categories,
     type,
     getCategories,
@@ -160,6 +150,5 @@ export const useTransactionStore = defineStore("transaction", () => {
     createTransaction,
     deleteTransaction,
     deleteSelectedTransaction,
-    selectedHandler,
   };
 });
