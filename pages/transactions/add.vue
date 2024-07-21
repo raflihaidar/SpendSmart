@@ -6,6 +6,12 @@ import type { ITransaction, TransactionState } from "~/types/ITransction";
 
 const store = useTransactionStore();
 const router = useRouter();
+const datePicker = ref<HTMLElement | null>(null);
+
+const isError = ref({
+  status: false,
+  message: "",
+});
 
 const { categories, type } = storeToRefs(store);
 
@@ -17,13 +23,20 @@ const payload = reactive({
   category_id: null,
 });
 
-const sendData = (paylad: any) => {
-  store.createTransaction(payload);
-  payload.description = null;
-  payload.amount = null;
-  payload.createdAt = null;
-  payload.type_id = null;
-  payload.category_id = null;
+const sendData = async (paylod: any) => {
+  try {
+    const res = await store.createTransaction(payload);
+    payload.description = null;
+    payload.amount = null;
+    payload.createdAt = null;
+    payload.type_id = null;
+    payload.category_id = null;
+    isError.value.status = false;
+    isError.value.message = res || "";
+  } catch (error: Error) {
+    isError.value.message = error.statusMessage;
+    isError.value.status = true;
+  }
 };
 
 onMounted(() => {
@@ -59,7 +72,7 @@ onMounted(() => {
 
     <main class="w-full mt-5 grid gap-y-5">
       <section>
-        <BaseMessages />
+        <BaseMessages :isError="isError.status" :message="isError.message" />
       </section>
       <div class="bg-white shadow-sm rounded-lg px-3 py-4">
         <p class="text-md font-bold mb-2">Category</p>
@@ -94,6 +107,7 @@ onMounted(() => {
           <span class="flex-grow">
             <BaseLabel name="Date" />
             <BaseDatePicker
+              ref="datePicker"
               width="w-[40%]"
               v-model="payload.createdAt"
               class="text-sm px-3 py-2"
