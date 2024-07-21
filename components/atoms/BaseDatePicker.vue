@@ -6,7 +6,7 @@ const props = defineProps({
     default: "w-full",
   },
   modelValue: {
-    type: [String, Number, Boolean, null],
+    type: [String, null],
     required: true,
   },
 });
@@ -15,7 +15,6 @@ const emit = defineEmits(["update:modelValue"]);
 
 const handleInput = (event: Event) => {
   emit("update:modelValue", (event.target as HTMLInputElement).value);
-  console.log(typeof (event.target as HTMLInputElement).value);
 };
 </script>
 
@@ -24,6 +23,8 @@ const handleInput = (event: Event) => {
     type="date"
     name=""
     id=""
+    :value="modelValue"
+    ref="datePicker"
     @change="handleInput($event)"
     :class="`${width} outline-none border-color3 border py-1 px-2 rounded-lg flex flex-row-reverse text-xs`"
   />

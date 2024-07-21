@@ -27,7 +27,7 @@ const handleSignIn = async () => {
       error.value = result?.error ?? "Internal Server Error";
     }
   } catch (error) {
-    console.log("error");
+    console.log(error);
   } finally {
     isLoading.value = false;
   }
