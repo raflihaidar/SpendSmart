@@ -19,7 +19,6 @@ const props = defineProps({
 const menus = reactive(props.menus);
 
 const handleMenuClick = (index: number) => {
-  console.log("clicked");
   props.menus.forEach((menu: any, i: number) => {
     menu.isActive = i === index;
   });

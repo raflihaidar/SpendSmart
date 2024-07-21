@@ -33,7 +33,7 @@ const props = defineProps<Props>();
         v-if="!$slots.optional"
       >
         {{ value }}
-        <span class="text-green-500 text-sm ml-2">+15%</span>
+        <!-- <span class="text-green-500 text-sm ml-2">+15%</span> -->
       </p>
       <slot name="optional"></slot>
     </section>
