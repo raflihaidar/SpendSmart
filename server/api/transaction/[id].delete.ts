@@ -2,15 +2,15 @@ import { RESPONSE_CODE } from "~/server/app/common/code";
 import { deleteTransaction } from "~/server/database/repositories/transactionRepositories";
 
 export default defineEventHandler(async (event) => {
-  const userid = getRouterParam(event, "id");
-  const body = await readBody(event);
-  if (!body) {
+  const transactionId = getRouterParam(event, "id");
+  const { userId } = await readBody(event);
+  if (!userId) {
     throw createError({
       statusCode: RESPONSE_CODE.INTERNAL_SERVER_ERROR.code,
       statusMessage: RESPONSE_CODE.INTERNAL_SERVER_ERROR.msg,
     });
   }
-  const response = await deleteTransaction(userid, body.id);
+  const response = await deleteTransaction(userId, transactionId);
 
   if (!response) {
     throw createError({
@@ -19,5 +19,7 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  return response;
+  return {
+    message: "Delete Transaction Sucess",
+  };
 });
