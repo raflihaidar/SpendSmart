@@ -1,9 +1,7 @@
 import { defineStore } from "pinia";
-import type {
-  ITransaction,
-  TransactionState,
-  TransactionInput,
-} from "~/types/ITransction";
+import Swal from "sweetalert2";
+import userGet from "~/server/api/transaction/user.get";
+import type { TransactionInput } from "~/types/ITransction";
 
 export const useTransactionStore = defineStore("transaction", () => {
   const transactions = ref<TransactionInput[]>([]);
@@ -58,6 +56,7 @@ export const useTransactionStore = defineStore("transaction", () => {
           `/api/transaction/user?id=${user.value.id}`
         );
         const data = await response.json();
+
         transactions.value = data;
       }
     } catch (error) {
@@ -65,41 +64,102 @@ export const useTransactionStore = defineStore("transaction", () => {
     }
   };
 
-  const createTransaction = async (payload: any): Promise<void | null> => {
-    try {
-      console.log("dari store : ", payload);
-      const { user } = storeToRefs(authStore);
-      if (user.value?.id) {
-        const data = await $fetch("/api/transaction/create", {
-          method: "POST",
-          body: {
-            description: payload.description,
-            amount: parseInt(payload.amount),
-            createdAt: payload.createdAt,
-            category_id: parseInt(payload.category_id),
-            type_id: parseInt(payload.type_id),
-            user_id: user.value.id,
-          },
-        });
-        if (data) {
-          transactions.value?.push(data);
-          console.log("berhasil ditambahkan");
-        }
-
-        console.log(data);
-      }
-    } catch (error) {
-      console.log(error);
+  const createTransaction = async (payload: any): Promise<string | null> => {
+    const { user } = storeToRefs(authStore);
+    if (!user.value?.id) {
+      return null;
     }
+
+    try {
+      const response = await $fetch("/api/transaction/create", {
+        method: "POST",
+        body: {
+          description: payload.description,
+          amount: parseInt(payload.amount),
+          createdAt: payload.createdAt,
+          category_id: parseInt(payload.category_id),
+          type_id: parseInt(payload.type_id),
+          user_id: user.value.id,
+        },
+      });
+
+      if (!response) {
+        return null;
+      }
+
+      return response.message;
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const deleteTransaction = async (id: string): Promise<string | null> => {
+    const { user } = storeToRefs(authStore);
+    if (!user.value?.id) {
+      return null;
+    }
+    try {
+      const response = await $fetch(`/api/transaction/${id}`, {
+        method: "DELETE",
+        body: {
+          userId: user.value.id,
+        },
+      });
+
+      if (!response) {
+        return null;
+      }
+
+      let result = transactions.value.filter((tx) => tx.id != id);
+      transactions.value = result;
+
+      return "Success";
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const deleteSelectedTransaction = async (transaction: any) => {
+    const { user } = storeToRefs(authStore);
+    console.log("from store : ", transaction);
+
+    if (!user.value?.id) {
+      return;
+    }
+
+    // if (!transaction) {
+    //   throw Error;
+    // }
+
+    try {
+      const response = await $fetch("/api/transaction/multi", {
+        method: "DELETE",
+        body: {
+          transactionIds: transaction,
+          userId: user.value.id,
+        },
+      });
+    } catch (error: Error) {
+      throw error;
+    }
+  };
+
+  const selectedHandler = (item: TransactionInput) => {
+    selectedTransaction.value.push(item);
+    console.log(selectedTransaction.value);
   };
 
   return {
     transactions,
+    selectedTransaction,
     categories,
     type,
     getCategories,
     getType,
     getTransaction,
     createTransaction,
+    deleteTransaction,
+    deleteSelectedTransaction,
+    selectedHandler,
   };
 });

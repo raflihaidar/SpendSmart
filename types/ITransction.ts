@@ -23,9 +23,13 @@ export interface TransactionState {
 }
 
 export interface TransactionInput {
-  description: string | null;
-  amount: number | null;
-  createdAt: string | null;
-  type_id: number | null;
-  category_id: number | null;
+  id: string;
+  description: string;
+  amount: number;
+  createdAt: string;
+  type_id: number;
+  category: {
+    name: string;
+  };
+  category_id: number;
 }
