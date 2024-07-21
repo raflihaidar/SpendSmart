@@ -25,6 +25,7 @@
     "apexcharts": "^3.50.0",
     "bcrypt": "^5.1.1",
     "nuxt": "^3.12.2",
+    "sweetalert2": "^11.12.2",
     "vee-validate": "^4.13.1",
     "vue": "latest",
     "vue3-apexcharts": "^1.5.3",
@@ -38,6 +39,7 @@
     "@types/bcrypt": "^5.0.2",
     "autoprefixer": "^10.4.19",
     "postcss": "^8.4.39",
-    "prisma": "^5.16.1"
+    "prisma": "^5.16.1",
+    "sass": "^1.77.8"
   }
 }

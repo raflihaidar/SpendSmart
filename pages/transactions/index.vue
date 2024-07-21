@@ -1,16 +1,118 @@
 <script setup lang="ts">
+import Swal from "sweetalert2";
+import { useTransactionStore } from "~/stores/transaction.store";
+import type { TransactionInput } from "~/types/ITransction";
+
 definePageMeta({
   name: "transactions",
 });
-import { useTransactionStore } from "~/stores/transaction.store";
-const headerNames = ["Date", "Title", "Category", "Amount", "Actions", " "];
 
+const headerNames = ["Date", "Title", "Category", "Amount", "Actions", " "];
 const transactionStore = useTransactionStore();
 const { transactions } = storeToRefs(transactionStore);
 
-watchEffect(() => {
+const selectedItem = ref<TransactionInput[]>([]);
+
+const deleteTransaction = (id: string | undefined) => {
+  const swalWithBootstrapButtons = Swal.mixin({
+    customClass: {
+      confirmButton: "btn btn-success",
+      cancelButton: "btn btn-danger",
+    },
+    buttonsStyling: true,
+  });
+  swalWithBootstrapButtons
+    .fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "No, cancel!",
+      reverseButtons: true,
+    })
+    .then(async (result: any) => {
+      if (result.isConfirmed) {
+        await transactionStore
+          .deleteTransaction(id || "")
+          .then(() => {
+            swalWithBootstrapButtons.fire({
+              title: "Deleted!",
+              text: "Your transaction has been deleted.",
+              icon: "success",
+            });
+          })
+          .catch((error: any) => {
+            swalWithBootstrapButtons.fire({
+              title: "Cancelled",
+              text: error.message,
+              icon: "error",
+            });
+          });
+      } else if (
+        /* Read more about handling dismissals below */
+        result.dismiss === Swal.DismissReason.cancel
+      ) {
+        swalWithBootstrapButtons.fire({
+          title: "Delete Cancelled",
+          icon: "error",
+        });
+      }
+    });
+};
+
+onMounted(() => {
   transactionStore.getTransaction();
 });
+
+const handleMultipleDelete = async () => {
+  const swalWithBootstrapButtons = Swal.mixin({
+    customClass: {
+      confirmButton: "btn btn-success",
+      cancelButton: "btn btn-danger",
+    },
+    buttonsStyling: true,
+  });
+  swalWithBootstrapButtons
+    .fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "No, cancel!",
+      reverseButtons: true,
+    })
+    .then(async (result: any) => {
+      if (result.isConfirmed) {
+        await transactionStore
+          .deleteSelectedTransaction(selectedItem.value)
+          .then(() => {
+            swalWithBootstrapButtons.fire({
+              title: "Deleted!",
+              text: "Your transaction has been deleted.",
+              icon: "success",
+            });
+            transactionStore.getTransaction();
+          })
+          .catch((error: any) => {
+            swalWithBootstrapButtons.fire({
+              title: "Cancelled",
+              text: error.message,
+              icon: "error",
+            });
+          });
+      } else if (
+        /* Read more about handling dismissals below */
+        result.dismiss === Swal.DismissReason.cancel
+      ) {
+        swalWithBootstrapButtons.fire({
+          title: "Delete Cancelled",
+          icon: "error",
+        });
+      }
+    });
+};
 </script>
 
 <template>
@@ -29,6 +131,8 @@ watchEffect(() => {
       <div class="flex w-auto gap-x-3">
         <BaseButton
           title="Delete"
+          @delete="handleMultipleDelete"
+          eventType="delete"
           width="max-w-28"
           bgColor="bg-[#E60D0D]"
           textColor="text-white"
@@ -73,14 +177,20 @@ watchEffect(() => {
             </td>
             <td class="whitespace-nowrap px-6 py-4">
               {{ formatCurrency(item.amount) }}
-              <!-- {{ item.amount }} -->
             </td>
             <td class="whitespace-nowrap px-6 py-4 font-bold flex gap-x-2">
               <span>Edit</span>
-              <span class="text-red-500">Delete</span>
+              <span class="text-red-500" @click="deleteTransaction(item.id)"
+                >Delete</span
+              >
             </td>
             <td class="whitespace-nowrap px-6 py-4">
-              <input type="checkbox" name="" id="" />
+              <input
+                type="checkbox"
+                :id="item.id"
+                :value="item"
+                v-model="selectedItem"
+              />
             </td>
           </tr>
         </template>
