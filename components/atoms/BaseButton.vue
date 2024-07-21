@@ -27,7 +27,14 @@ const props = defineProps({
     type: String,
     required: true,
     validator(value: any, props: any) {
-      return ["signin", "signup", "signout", "filter", "add"].includes(value);
+      return [
+        "signin",
+        "signup",
+        "signout",
+        "filter",
+        "add",
+        "delete",
+      ].includes(value);
     },
   },
 });
@@ -37,6 +44,7 @@ const emits = defineEmits<{
   (e: "signup"): void;
   (e: "signout"): void;
   (e: "add", payload: any): void;
+  (e: "delete", payload: any): void;
 }>();
 
 const handleClick = () => {
