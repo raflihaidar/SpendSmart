@@ -7,19 +7,25 @@ export const useFinanceStore = defineStore("finance", () => {
   const expense = ref(0);
 
   const formatedExpense = computed(() => {
-    return `-Rp${expense.value.toString()}`;
+    if (expense.value == 0) {
+      return formatCurrency(expense.value);
+    }
+    return `-${formatCurrency(expense.value)}`;
   });
 
   const formatedIncome = computed(() => {
-    return `+Rp${income.value.toString()}`;
+    if (income.value == 0) {
+      return formatCurrency(income.value);
+    }
+    return `+${formatCurrency(income.value)}`;
   });
 
   const formatedBalance = computed(() => {
-    if (balance.value < 0) {
-      let newValue = Math.abs(balance.value).toString();
-      return `-Rp${newValue}`;
+    if (balance.value <= 0) {
+      return `${formatCurrency(balance.value)}`;
     }
-    return `+Rp${balance.value.toString()}`;
+
+    return `+${formatCurrency(balance.value)}`;
   });
 
   const getFinanceRecord = async (): Promise<void> => {
@@ -34,8 +40,6 @@ export const useFinanceStore = defineStore("finance", () => {
           balance.value = data.financial_record.balance;
           income.value = data.financial_record.income;
           expense.value = data.financial_record.expense;
-        } else {
-          console.log("Financial record tidak ditemukan");
         }
       } else {
         console.log("User ID tidak ditemukan");
