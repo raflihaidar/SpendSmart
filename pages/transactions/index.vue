@@ -85,27 +85,22 @@ const handleMultipleDelete = async () => {
     })
     .then(async (result: any) => {
       if (result.isConfirmed) {
-        await transactionStore
-          .deleteSelectedTransaction(selectedItem.value)
-          .then(() => {
-            swalWithBootstrapButtons.fire({
-              title: "Deleted!",
-              text: "Your transaction has been deleted.",
-              icon: "success",
-            });
-            transactionStore.getTransaction();
-          })
-          .catch((error: any) => {
-            swalWithBootstrapButtons.fire({
-              title: "Cancelled",
-              text: error.message,
-              icon: "error",
-            });
+        try {
+          await transactionStore.deleteSelectedTransaction(selectedItem.value);
+          swalWithBootstrapButtons.fire({
+            title: "Deleted!",
+            text: "Your transaction has been deleted.",
+            icon: "success",
           });
-      } else if (
-        /* Read more about handling dismissals below */
-        result.dismiss === Swal.DismissReason.cancel
-      ) {
+          transactionStore.getTransaction();
+        } catch (error: Error) {
+          swalWithBootstrapButtons.fire({
+            title: "error",
+            text: error.statusMessage,
+            icon: "error",
+          });
+        }
+      } else if (result.dismiss === Swal.DismissReason.cancel) {
         swalWithBootstrapButtons.fire({
           title: "Delete Cancelled",
           icon: "error",
