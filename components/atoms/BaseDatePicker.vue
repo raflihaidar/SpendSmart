@@ -21,10 +21,7 @@ const handleInput = (event: Event) => {
 <template>
   <input
     type="date"
-    name=""
-    id=""
     :value="modelValue"
-    ref="datePicker"
     @change="handleInput($event)"
     :class="`${width} outline-none border-color3 border py-1 px-2 rounded-lg flex flex-row-reverse text-xs`"
   />
