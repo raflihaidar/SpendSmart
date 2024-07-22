@@ -4,13 +4,14 @@ import { getTransactionById } from "~/server/database/repositories/transactionRe
 export default defineEventHandler(async (event) => {
   const id = getRouterParam(event, "id");
 
-  const transactions = await getTransactionById(id)
+  const transactions = await getTransactionById(id);
 
-  if(!transactions){
-   throw createError({
-    statusCode : RESPONSE_CODE.NOT_FOUND.code,
-    statusMessage : RESPONSE_CODE.NOT_FOUND.msg
-   })
+  if (!transactions) {
+    throw createError({
+      statusCode: RESPONSE_CODE.NOT_FOUND.code,
+      statusMessage: RESPONSE_CODE.NOT_FOUND.msg,
+    });
   }
-  return await getTransactionById(id);
+
+  return transactions;
 });

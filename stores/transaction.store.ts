@@ -1,7 +1,5 @@
 import { defineStore } from "pinia";
-import Swal from "sweetalert2";
-import userGet from "~/server/api/transaction/user.get";
-import type { TransactionInput } from "~/types/ITransction";
+import type { TransactionInput, TransactionState } from "~/types/ITransction";
 
 export const useTransactionStore = defineStore("transaction", () => {
   const transactions = ref<TransactionInput[]>([]);
@@ -64,6 +62,18 @@ export const useTransactionStore = defineStore("transaction", () => {
     }
   };
 
+  const getDetailTransaction = async (
+    id: string
+  ): Promise<TransactionState | null> => {
+    const transaction = await fetch(`/api/transaction/${id}`, {
+      method: "GET",
+    });
+
+    const data = await transaction.json();
+
+    return data;
+  };
+
   const createTransaction = async (payload: any): Promise<string | null> => {
     const { user } = storeToRefs(authStore);
     if (!user.value?.id) {
@@ -90,6 +100,20 @@ export const useTransactionStore = defineStore("transaction", () => {
       return response.message;
     } catch (error) {
       throw error;
+    }
+  };
+
+  const editTransaction = async (payload: any): Promise<void | null> => {
+    try {
+      console.log(payload);
+      const res = await $fetch(`/api/transaction/${payload.id}`, {
+        method: "PATCH",
+        body: {
+          payload,
+        },
+      });
+    } catch (error) {
+      console.log(payload);
     }
   };
 
@@ -147,8 +171,10 @@ export const useTransactionStore = defineStore("transaction", () => {
     getCategories,
     getType,
     getTransaction,
+    getDetailTransaction,
     createTransaction,
     deleteTransaction,
     deleteSelectedTransaction,
+    editTransaction,
   };
 });

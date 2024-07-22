@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import Swal from "sweetalert2";
 import { useTransactionStore } from "~/stores/transaction.store";
-import type { TransactionInput } from "~/types/ITransction";
+import { type TransactionInput } from "~/types/ITransction";
+import { type TransactionState } from "~/types/ITransction";
 
 definePageMeta({
   name: "transactions",
@@ -9,9 +10,11 @@ definePageMeta({
 
 const headerNames = ["Date", "Title", "Category", "Amount", "Actions", " "];
 const transactionStore = useTransactionStore();
-const { transactions } = storeToRefs(transactionStore);
+const { transactions, type, categories } = storeToRefs(transactionStore);
 
 const selectedItem = ref<TransactionInput[]>([]);
+const isOpenModal = ref(false);
+const modalContent = ref<TransactionState | null>(null);
 
 const deleteTransaction = (id: string | undefined) => {
   const swalWithBootstrapButtons = Swal.mixin({
@@ -61,8 +64,21 @@ const deleteTransaction = (id: string | undefined) => {
     });
 };
 
+const openModal = async (id: string) => {
+  isOpenModal.value = true;
+  const res = await transactionStore.getDetailTransaction(id);
+  modalContent.value = res;
+};
+
+const closeModal = async () => {
+  modalContent.value = null;
+  isOpenModal.value = false;
+};
+
 onMounted(() => {
   transactionStore.getTransaction();
+  transactionStore.getType();
+  transactionStore.getCategories();
 });
 
 const handleMultipleDelete = async () => {
@@ -117,6 +133,7 @@ const handleMultipleDelete = async () => {
         <BaseDatePicker />
         <BaseSearch />
         <BaseButton
+          eventType="filter"
           title="Filter"
           width="max-w-28"
           icon="ic:baseline-filter-alt"
@@ -134,6 +151,7 @@ const handleMultipleDelete = async () => {
           icon="ic:baseline-delete"
         />
         <BaseButton
+          eventType="export"
           title="Export"
           width="max-w-28"
           borderColor="border-color3"
@@ -141,6 +159,7 @@ const handleMultipleDelete = async () => {
         />
         <NuxtLink to="/transactions/add">
           <BaseButton
+            eventType=""
             title="Add"
             width="max-w-28"
             bgColor="bg-color1"
@@ -174,7 +193,7 @@ const handleMultipleDelete = async () => {
               {{ formatCurrency(item.amount) }}
             </td>
             <td class="whitespace-nowrap px-6 py-4 font-bold flex gap-x-2">
-              <span>Edit</span>
+              <span @click="openModal(item.id)">Edit</span>
               <span class="text-red-500" @click="deleteTransaction(item.id)"
                 >Delete</span
               >
@@ -203,5 +222,63 @@ const handleMultipleDelete = async () => {
         Remember to always review and record every transaction you make.
       </p>
     </section>
+    <TheModal :isOpen="isOpenModal" @closeModal="closeModal">
+      <template #modal-header>
+        <div>
+          <p>Edit Transaction</p>
+        </div>
+      </template>
+      <template #modal-content>
+        <TheForm v-if="modalContent">
+          <template #form-content>
+            <section>
+              <BaseLabel name="Description" />
+              <BaseInput inputType="text" v-model="modalContent.description" />
+            </section>
+            <section>
+              <BaseLabel name="Amount" />
+              <BaseInput inputType="number" v-model="modalContent.amount" />
+            </section>
+            <section>
+              <span>
+                <BaseLabel name="Date" />
+                <BaseDatePicker v-model="modalContent.createdAt" />
+              </span>
+            </section>
+            <section class="flex justify-between">
+              <span>
+                <BaseLabel name="Categories" />
+                <BaseDropDown
+                  :datas="categories"
+                  v-model="modalContent.category.name"
+                />
+              </span>
+              <span>
+                <BaseLabel name="Type" />
+                <BaseDropDown :datas="type" v-model="modalContent.type_id" />
+              </span>
+            </section>
+            <section class="flex w-[100%] place-content-end gap-x-2">
+              <BaseButton
+                title="Cancel"
+                eventType="closeModal"
+                @closeModal="closeModal"
+                bgColor="bg-red-500"
+                width="w-28"
+                textColor="text-white"
+              />
+              <BaseButton
+                eventType="edit"
+                @edit="transactionStore.editTransaction(modalContent)"
+                title="Update"
+                bgColor="bg-color1"
+                width="w-28"
+                textColor="text-white"
+              />
+            </section>
+          </template>
+        </TheForm>
+      </template>
+    </TheModal>
   </div>
 </template>

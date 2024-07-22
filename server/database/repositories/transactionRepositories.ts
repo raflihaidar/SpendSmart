@@ -298,7 +298,7 @@ export const deleteMultipleTransaction = async (
 
 export const getTransactionById = async (
   id: string | undefined
-): Promise<Transaction | null> => {
+): Promise<FormattedTransaction | null> => {
   const transaction = await prisma.transaction.findUnique({
     where: {
       id,
@@ -311,5 +311,30 @@ export const getTransactionById = async (
       },
     },
   });
-  return transaction;
+
+  console.log("transaction : ", transaction);
+
+  if (!transaction) {
+    console.log("tidak ada");
+    return null;
+  }
+
+  const [year, month, day] = transaction.createdAt
+    .toISOString()
+    .split("T")[0]
+    .split("-")
+    .map(Number);
+
+  const newDate = new Date(year, month - 1, day);
+
+  const years = newDate.getFullYear();
+  const months = String(newDate.getMonth() + 1).padStart(2, "0"); // Months are 0-based, so add 1
+  const days = String(newDate.getDate()).padStart(2, "0");
+
+  const formattedDate = `${years}-${months}-${days}`;
+
+  return {
+    ...transaction,
+    createdAt: formattedDate,
+  };
 };
