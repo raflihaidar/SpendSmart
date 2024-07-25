@@ -68,6 +68,7 @@ const openModal = async (id: string) => {
   isOpenModal.value = true;
   const res = await transactionStore.getDetailTransaction(id);
   modalContent.value = res;
+  console.log("modalContent : ", modalContent.value);
 };
 
 const closeModal = async () => {
@@ -119,6 +120,51 @@ const handleMultipleDelete = async () => {
       } else if (result.dismiss === Swal.DismissReason.cancel) {
         swalWithBootstrapButtons.fire({
           title: "Delete Cancelled",
+          icon: "error",
+        });
+      }
+    });
+};
+
+const handleEdit = async () => {
+  const swalWithBootstrapButtons = Swal.mixin({
+    customClass: {
+      confirmButton: "bg-color1 text-white font-bold rounded-xl px-3 py-2",
+      cancelButton: "bg-red-500 text-white font-bold rounded-xl px-3 py-2 mr-3",
+    },
+    buttonsStyling: false,
+  });
+  swalWithBootstrapButtons
+    .fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, edit it!",
+      cancelButtonText: "No, cancel!",
+      reverseButtons: true,
+    })
+    .then(async (result: any) => {
+      if (result.isConfirmed) {
+        try {
+          await transactionStore.editTransaction(modalContent.value);
+          isOpenModal.value = false;
+          swalWithBootstrapButtons.fire({
+            title: "Updated!",
+            text: "Your transaction has been updated.",
+            icon: "success",
+          });
+          transactionStore.getTransaction();
+        } catch (error: Error) {
+          swalWithBootstrapButtons.fire({
+            title: "error",
+            text: error.statusMessage,
+            icon: "error",
+          });
+        }
+      } else if (result.dismiss === Swal.DismissReason.cancel) {
+        swalWithBootstrapButtons.fire({
+          title: "Delete Updated",
           icon: "error",
         });
       }
@@ -224,12 +270,12 @@ const handleMultipleDelete = async () => {
     </section>
     <TheModal :isOpen="isOpenModal" @closeModal="closeModal">
       <template #modal-header>
-        <div>
+        <div class="text-xl font-semibold mb-5">
           <p>Edit Transaction</p>
         </div>
       </template>
       <template #modal-content>
-        <TheForm v-if="modalContent">
+        <TheForm v-if="modalContent" class="grid gap-y-3">
           <template #form-content>
             <section>
               <BaseLabel name="Description" />
@@ -242,20 +288,34 @@ const handleMultipleDelete = async () => {
             <section>
               <span>
                 <BaseLabel name="Date" />
-                <BaseDatePicker v-model="modalContent.createdAt" />
+                <BaseDatePicker
+                  v-model="modalContent.createdAt"
+                  class="px-3 py-2"
+                />
               </span>
             </section>
-            <section class="flex justify-between">
-              <span>
+            <section class="flex justify-between gap-x-5">
+              <span class="w-1/2">
                 <BaseLabel name="Categories" />
                 <BaseDropDown
                   :datas="categories"
-                  v-model="modalContent.category.name"
+                  v-model="modalContent.category_id"
+                  width="w-full"
+                  border="border"
+                  borderColor="border-color3"
+                  class="px-3 py-2"
                 />
               </span>
-              <span>
+              <span class="w-1/2">
                 <BaseLabel name="Type" />
-                <BaseDropDown :datas="type" v-model="modalContent.type_id" />
+                <BaseDropDown
+                  :datas="type"
+                  v-model="modalContent.type_id"
+                  width="w-full"
+                  border="border"
+                  borderColor="border-color3"
+                  class="px-3 py-2"
+                />
               </span>
             </section>
             <section class="flex w-[100%] place-content-end gap-x-2">
@@ -269,7 +329,7 @@ const handleMultipleDelete = async () => {
               />
               <BaseButton
                 eventType="edit"
-                @edit="transactionStore.editTransaction(modalContent)"
+                @edit="handleEdit"
                 title="Update"
                 bgColor="bg-color1"
                 width="w-28"

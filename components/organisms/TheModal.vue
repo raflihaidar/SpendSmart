@@ -7,17 +7,17 @@ const props = defineProps({
   },
 });
 
-const emits = defineEmits(["closeModal"]);
+const emits = defineEmits(["update:isOpen"]);
 
 const closeMOdal = () => {
-  emits("closeModal");
+  emits("update:isOpen", false);
 };
 </script>
 
 <template>
   <div class="fixed w-full top-0 left-0 z-20" v-if="isOpen">
     <div
-      class="bg-white rounded-lg px-3 py-2 absolute w-[40%] top-[50%] left-[50%] transform -translate-x-[50%] -translate-y-[50%] z-40"
+      class="bg-white rounded-lg p-3 absolute w-[40%] top-[50%] left-[50%] transform -translate-x-[50%] -translate-y-[50%] z-40"
     >
       <slot name="modal-header" />
       <slot name="modal-content" />
