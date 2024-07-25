@@ -22,10 +22,6 @@ const getUrl = computed(() => {
     })
     .filter(Boolean);
 });
-
-watchEffect(() => {
-  console.log(getUrl.value);
-});
 </script>
 
 <template>
