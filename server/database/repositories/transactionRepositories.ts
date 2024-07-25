@@ -104,57 +104,87 @@ export const getAllTransaction = async (
 };
 
 export const updateTransaction = async (
+  id: string | undefined,
   data: ITransaction
-): Promise<{
-  transaction: Transaction | null;
-  financial_record: Financial_Record | null;
-} | null> => {
+): Promise<Transaction | null> => {
   try {
-    const [transaction, user] = await prisma.$transaction([
-      prisma.transaction.update({
+    return await prisma.$transaction(async (tx) => {
+      // Ambil data transaksi sebelumnya
+      const previousTransaction = await tx.transaction.findUnique({
+        where: { id },
+      });
+
+      if (!previousTransaction) {
+        throw new Error("Transaction not found");
+      }
+
+      // Perbarui transaksi
+      const transaction = await tx.transaction.update({
         where: {
-          id: data.id,
+          id,
         },
         data,
-      }),
+      });
 
-      prisma.user.update({
-        where: {
-          id: data.user_id,
-        },
-        data: {
-          financial_record: {
-            update: {
-              balance: {
-                increment: data.type_id === 1 ? data.amount : -data.amount,
+      const amountDifference = data.amount - previousTransaction.amount;
+
+      if (
+        data.amount !== previousTransaction.amount ||
+        data.type_id !== previousTransaction.type_id
+      ) {
+        // Inisialisasi nilai perubahan balance, income, dan expense
+        let balanceIncrement = 0;
+        let incomeIncrement = 0;
+        let expenseIncrement = 0;
+
+        // Hitung perubahan berdasarkan perubahan tipe transaksi
+        if (data.type_id === 1 && previousTransaction.type_id === 2) {
+          balanceIncrement = data.amount + previousTransaction.amount;
+          incomeIncrement = data.amount;
+          expenseIncrement = -previousTransaction.amount;
+        } else if (data.type_id === 2 && previousTransaction.type_id === 1) {
+          balanceIncrement = -data.amount - previousTransaction.amount;
+          incomeIncrement = -previousTransaction.amount;
+          expenseIncrement = data.amount;
+        } else if (data.type_id === 1 && previousTransaction.type_id === 1) {
+          balanceIncrement = amountDifference;
+          incomeIncrement = amountDifference;
+        } else if (data.type_id === 2 && previousTransaction.type_id === 2) {
+          balanceIncrement = -amountDifference;
+          expenseIncrement = amountDifference;
+        }
+
+        // Perbarui catatan keuangan
+        await tx.user.update({
+          where: {
+            id: data.user_id,
+          },
+          data: {
+            financial_record: {
+              update: {
+                balance: {
+                  increment: balanceIncrement,
+                },
+                income: {
+                  increment: incomeIncrement,
+                },
+                expense: {
+                  increment: expenseIncrement,
+                },
+                updatedAt: toLocalISOString(new Date()),
               },
-              income:
-                data.type_id === 1
-                  ? { increment: data.amount }
-                  : { increment: 0 },
-              expense:
-                data.type_id === 2
-                  ? { increment: data.amount }
-                  : { increment: 0 },
-              updatedAt: toLocalISOString(new Date()),
             },
           },
-        },
-        select: {
-          financial_record: true,
-        },
-      }),
-    ]);
+        });
+      }
 
-    return {
-      transaction: transaction || null,
-      financial_record: user?.financial_record || null,
-    };
+      return transaction;
+    });
   } catch (error) {
     console.log(error);
     return null;
   } finally {
-    await prisma.$disconnect;
+    await prisma.$disconnect();
   }
 };
 
@@ -312,8 +342,6 @@ export const getTransactionById = async (
     },
   });
 
-  console.log("transaction : ", transaction);
-
   if (!transaction) {
     console.log("tidak ada");
     return null;
@@ -337,4 +365,77 @@ export const getTransactionById = async (
     ...transaction,
     createdAt: formattedDate,
   };
+};
+
+export const getTotalByCategory = async (
+  year: number,
+  month: number,
+  user_id: string
+): Promise<{ category: string; total: number }[]> => {
+  const startDate = new Date(year, month - 1, 1);
+  const endDate = new Date(year, month, 1);
+
+  const categoryId = await prisma.transaction.groupBy({
+    by: ["category_id"],
+    _sum: {
+      amount: true,
+    },
+    where: {
+      AND: [
+        {
+          user_id,
+        },
+        {
+          createdAt: {
+            gte: startDate,
+            lte: endDate,
+          },
+        },
+        {
+          type_id: 2,
+        },
+      ],
+    },
+  });
+
+  const result = await Promise.all(
+    categoryId.map(async (item) => {
+      const categoryName = await prisma.category.findUnique({
+        where: { id: item.category_id },
+        select: {
+          name: true,
+        },
+      });
+
+      return {
+        category: categoryName?.name,
+        total: item._sum.amount,
+      };
+    })
+  );
+
+  return result.filter(
+    (item): item is { category: string; total: number } => item !== null
+  );
+};
+
+export const getTransactionByDate = async (
+  year: number,
+  month: number
+): Promise<Transaction[] | null> => {
+  const startDate = new Date(year, month - 1, 1);
+  const endDate = new Date(year, month, 1);
+  const filteredTransaction = await prisma.transaction.findMany({
+    where: {
+      createdAt: {
+        gte: startDate,
+        lte: endDate,
+      },
+    },
+    include: {
+      category: true,
+    },
+  });
+
+  return filteredTransaction;
 };

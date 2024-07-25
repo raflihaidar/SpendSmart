@@ -1,3 +1,18 @@
+export const months = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+];
+
 // Membuat fungsi untuk mengonversi waktu ke format ISO string lokal
 export const toLocalISOString = (date: Date) => {
   const pad = (num: number) => (num < 10 ? "0" : "") + num;
@@ -16,4 +31,15 @@ export const toLocalISOString = (date: Date) => {
   const offsetMinutes = pad(Math.abs(timezoneOffset) % 60);
 
   return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.${milliseconds}${sign}${offsetHours}:${offsetMinutes}`;
+};
+
+export const getCurrentMount = () => {
+  const d = new Date();
+  const currMonth = d.getMonth();
+  return currMonth;
+};
+
+export const getCurrentYear = () => {
+  const d = new Date();
+  return d.getFullYear();
 };

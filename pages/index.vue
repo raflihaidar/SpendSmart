@@ -1,7 +1,18 @@
 <script setup lang="ts">
+import { getTransactionByDate } from "~/server/database/repositories/transactionRepositories";
+
 definePageMeta({
   name: "dashboard",
   middleware: "auth",
+});
+
+const transactionStore = useTransactionStore();
+const { getstat } = storeToRefs(transactionStore);
+const currentMonth = ref(months[getCurrentMount()]);
+const year = ref(getCurrentYear());
+
+onMounted(async () => {
+  await transactionStore.getTransactionCurrentMonth();
 });
 </script>
 
@@ -11,8 +22,15 @@ definePageMeta({
     <div class="mt-10 flex justify-between jus gap-x-5">
       <TheCard width="w-[40%]" title="Budgeting">
         <template #card-content>
-          <p class="text-green-custom text-sm font-bold mt-2">June 2024</p>
-          <BasePieChart />
+          <p class="text-green-custom text-sm font-bold mt-2">
+            {{ currentMonth }} {{ year }}
+          </p>
+          <div v-if="getstat.data.length <= 0">
+            <BasePieChart :label="[]" :data="[1]" />
+          </div>
+          <div v-else>
+            <BasePieChart :label="getstat.labels" :data="getstat.data" />
+          </div>
         </template>
       </TheCard>
       <TheCard width="w-[55%]" title="Spending Report">

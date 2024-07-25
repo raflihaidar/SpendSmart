@@ -5,8 +5,21 @@ export const useTransactionStore = defineStore("transaction", () => {
   const transactions = ref<TransactionInput[]>([]);
   const categories = ref([]);
   const type = ref([]);
-
+  const expensesCategories = ref([]);
   const authStore = useAuthStore();
+
+  const getstat = computed(() => {
+    const { labels, data } = expensesCategories.value.reduce(
+      (acc: any, item: any) => {
+        acc.labels.push(item?.category);
+        acc.data.push(item?.total);
+        return acc;
+      },
+      { labels: [], data: [] }
+    );
+
+    return { labels, data };
+  });
 
   const getCategories = async (): Promise<void | null> => {
     try {
@@ -105,15 +118,19 @@ export const useTransactionStore = defineStore("transaction", () => {
 
   const editTransaction = async (payload: any): Promise<void | null> => {
     try {
-      console.log(payload);
       const res = await $fetch(`/api/transaction/${payload.id}`, {
         method: "PATCH",
         body: {
-          payload,
+          description: payload.description,
+          amount: payload.amount,
+          createdAt: payload.createdAt,
+          type_id: parseInt(payload.type_id),
+          category_id: parseInt(payload.category_id),
+          user_id: payload.user_id,
         },
       });
     } catch (error) {
-      console.log(payload);
+      throw error;
     }
   };
 
@@ -145,7 +162,6 @@ export const useTransactionStore = defineStore("transaction", () => {
 
   const deleteSelectedTransaction = async (transaction: any) => {
     const { user } = storeToRefs(authStore);
-    console.log("from store : ", transaction);
 
     if (!user.value?.id) {
       return;
@@ -164,14 +180,37 @@ export const useTransactionStore = defineStore("transaction", () => {
     }
   };
 
+  const getTransactionCurrentMonth = async () => {
+    const { user } = storeToRefs(authStore);
+
+    if (!user.value?.id) {
+      throw createError({
+        statusCode: 404,
+        statusMessage: "Id User Not Found",
+      });
+    }
+
+    const res = await fetch(`/api/transaction/date?id=${user.value.id}`, {
+      method: "GET",
+    });
+
+    const data = await res.json();
+    expensesCategories.value = data;
+
+    console.log(expensesCategories.value);
+  };
+
   return {
     transactions,
     categories,
     type,
+    expensesCategories,
     getCategories,
+    getstat,
     getType,
     getTransaction,
     getDetailTransaction,
+    getTransactionCurrentMonth,
     createTransaction,
     deleteTransaction,
     deleteSelectedTransaction,

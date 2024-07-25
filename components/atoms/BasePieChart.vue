@@ -1,6 +1,34 @@
 <script lang="ts" setup>
-const options = reactive({
-  labels: ["Transport", "Food", "Shopping"],
+import { defineProps } from "vue";
+const props = defineProps({
+  label: {
+    type: Array,
+    required: true,
+  },
+  data: {
+    type: Array,
+    required: true,
+  },
+});
+
+const { label, data } = toRefs(props);
+
+const nullOptions = ref({
+  colors: ["#f0f0f0"],
+  legend: {
+    show: false,
+  },
+  states: {
+    hover: {
+      filter: {
+        type: "none",
+      },
+    },
+  },
+});
+
+const options = ref({
+  labels: label.value,
   plotOptions: {
     pie: {
       customScale: 1,
@@ -39,8 +67,6 @@ const options = reactive({
     },
   },
 });
-
-const series = reactive([40, 32, 28]);
 </script>
 
 <template>
@@ -49,8 +75,8 @@ const series = reactive([40, 32, 28]);
       <apexchart
         width="380"
         type="donut"
-        :options="options"
-        :series="series"
+        :options="label.length <= 0 ? nullOptions : options"
+        :series="data"
       ></apexchart>
     </ClientOnly>
   </div>
