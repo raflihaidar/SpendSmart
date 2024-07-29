@@ -21,23 +21,5 @@ const menuList = reactive([
     path: "/transactions",
     isActive: false,
   },
-  {
-    title: "Savings",
-    icon: "material-symbols:attach-money",
-    path: "/savings",
-    isActive: false,
-  },
-  {
-    title: "Budgeting",
-    icon: "ic:round-percentage",
-    path: "/budgeting",
-    isActive: false,
-  },
-  {
-    title: "Profile",
-    icon: "ic:round-person",
-    path: "/profile",
-    isActive: false,
-  },
 ]);
 </script>
