@@ -28,7 +28,7 @@ onMounted(() => {
       type="expense"
       :icon="'ic:round-trending-down'"
     />
-    <AnalyticCard
+    <!-- <AnalyticCard
       title="savings"
       value="0"
       type="balance"
@@ -37,6 +37,6 @@ onMounted(() => {
       <template #optional>
         <BaseProgressBar />
       </template>
-    </AnalyticCard>
+    </AnalyticCard> -->
   </div>
 </template>
