@@ -22,6 +22,12 @@ watchEffect(() => {
     emit("update:modelValue", datas.value[0].id);
   }
 });
+
+watch(datas, () => {
+  if (datas.value.length > 0) {
+    emit("update:modelValue", datas.value[0].id);
+  }
+});
 </script>
 
 <template>
@@ -36,11 +42,7 @@ watchEffect(() => {
       @change="handleChange($event)"
       :value="modelValue"
     >
-      <option
-        v-for="(item, index) in props.datas"
-        :key="index"
-        :value="item.id"
-      >
+      <option v-for="(item, index) in datas" :key="index" :value="item.id">
         {{ item.name }}
       </option>
     </select>
