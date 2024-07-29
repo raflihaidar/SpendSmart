@@ -170,6 +170,13 @@ const handleEdit = async () => {
       }
     });
 };
+
+watch(
+  () => modalContent.value?.type_id,
+  async (newValue: any) => {
+    await transactionStore.getCategories(newValue);
+  }
+);
 </script>
 
 <template>
