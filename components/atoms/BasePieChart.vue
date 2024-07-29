@@ -1,15 +1,11 @@
 <script lang="ts" setup>
-import { defineProps } from "vue";
-const props = defineProps({
-  label: {
-    type: Array,
-    required: true,
-  },
-  data: {
-    type: Array,
-    required: true,
-  },
-});
+import { defineProps, ref, toRefs, watch, onMounted } from "vue";
+
+// Mendefinisikan tipe untuk props
+const props = defineProps<{
+  label: string[];
+  data: number[];
+}>();
 
 const { label, data } = toRefs(props);
 
@@ -27,8 +23,47 @@ const nullOptions = ref({
   },
 });
 
-const options = ref({
-  labels: label.value,
+// Mendefinisikan interface untuk ChartOptions
+interface ChartOptions {
+  labels: string[];
+  plotOptions: {
+    pie: {
+      customScale: number;
+    };
+  };
+  legend: {
+    show: boolean;
+    showForSingleSeries: boolean;
+    showForNullSeries: boolean;
+    showForZeroSeries: boolean;
+    position: string;
+    horizontalAlign: string;
+    fontSize: string;
+    fontFamily: string;
+    fontWeight: number;
+    itemMargin: {
+      horizontal: number;
+      vertical: number;
+    };
+  };
+  responsive: Array<{
+    breakpoint: number;
+    options: {
+      chart: {
+        width: number;
+      };
+    };
+  }>;
+  tooltip: {
+    y: {
+      formatter: (val: number) => string;
+    };
+  };
+}
+
+// Menginisialisasi options dengan array kosong untuk labels
+const options = ref<ChartOptions>({
+  labels: [],
   plotOptions: {
     pie: {
       customScale: 1,
@@ -54,7 +89,7 @@ const options = ref({
       breakpoint: 480,
       options: {
         chart: {
-          width: 200,
+          width: 300,
         },
       },
     },
@@ -67,13 +102,27 @@ const options = ref({
     },
   },
 });
-</script>
 
+// Mengatur labels pada saat komponen dimuat
+onMounted(() => {
+  options.value.labels = label.value; // Spread operator untuk memaksa reaktivitas
+});
+
+// Mengamati perubahan pada label
+watch(
+  label,
+  (newVal: string[]) => {
+    options.value.labels = newVal; // Spread operator untuk memaksa reaktivitas
+    console.log("Labels diperbarui:", newVal);
+  },
+  { deep: true }
+);
+</script>
 <template>
-  <div class="flex justify-center">
+  <div class="flex justify-center items-center">
     <ClientOnly>
       <apexchart
-        width="380"
+        width="400"
         type="donut"
         :options="label.length <= 0 ? nullOptions : options"
         :series="data"

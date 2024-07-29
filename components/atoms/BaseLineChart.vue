@@ -1,5 +1,22 @@
 <script lang="ts" setup>
-const options = reactive({
+import { defineProps } from "vue";
+
+interface SeriesItem {
+  name: string;
+  data: number[];
+}
+const props = defineProps({
+  data: {
+    type: Array as PropType<SeriesItem[]>,
+    required: true,
+  },
+});
+
+const { data } = props;
+const series = ref<SeriesItem[]>([]);
+
+const options = ref({
+  colors: ["#48BB78", "#FF0000"],
   chart: {
     height: 350,
     type: "area",
@@ -14,34 +31,37 @@ const options = reactive({
     curve: "smooth",
   },
   xaxis: {
-    type: "datetime",
-    categories: [
-      "2018-09-19T00:00:00.000Z",
-      "2018-09-19T01:30:00.000Z",
-      "2018-09-19T02:30:00.000Z",
-      "2018-09-19T03:30:00.000Z",
-      "2018-09-19T04:30:00.000Z",
-      "2018-09-19T05:30:00.000Z",
-      "2018-09-19T06:30:00.000Z",
-    ],
-  },
-  tooltip: {
-    x: {
-      format: "dd/MM/yy HH:mm",
-    },
+    categories: [] as string[],
   },
 });
 
-const series = reactive([
-  {
-    name: "series1",
-    data: [31, 40, 28, 51, 42, 109, 100],
-  },
-  {
-    name: "series2",
-    data: [11, 32, 45, 32, 34, 52, 41],
-  },
-]);
+const updateChart = () => {
+  const months = getMonths();
+  options.value.xaxis.categories = months;
+  series.value = data;
+  console.log("dari child : ", series.value);
+};
+
+const getMonths = (): string[] => {
+  const monthNames = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
+  return monthNames;
+};
+
+watch(() => data, updateChart, { deep: true });
+onMounted(updateChart);
 </script>
 
 <template>

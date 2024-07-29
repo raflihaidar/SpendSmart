@@ -21,7 +21,7 @@ export const useTransactionStore = defineStore("transaction", () => {
     return { labels, data };
   });
 
-  const getCategories = async (): Promise<void | null> => {
+  const getCategories = async (typeId: number = 1): Promise<void | null> => {
     try {
       const { user } = storeToRefs(authStore);
 
@@ -31,7 +31,10 @@ export const useTransactionStore = defineStore("transaction", () => {
           statusMessage: "Id User Not Found",
         });
       }
-      const response = await fetch(`/api/category/${user.value.id}`);
+
+      const response = await fetch(
+        `/api/category/${user.value.id}?typeId=${typeId}`
+      );
 
       const data = await response.json();
       categories.value = data;
@@ -196,8 +199,56 @@ export const useTransactionStore = defineStore("transaction", () => {
 
     const data = await res.json();
     expensesCategories.value = data;
+  };
 
-    console.log(expensesCategories.value);
+  const getTotalTransaction = async () => {
+    try {
+      const { user } = storeToRefs(authStore);
+
+      if (!user.value?.id) {
+        return null;
+      }
+
+      const res = await fetch(
+        `/api/transaction/type-group?id=${user.value.id}`,
+        {
+          method: "GET",
+        }
+      );
+
+      const data = await res.json();
+
+      return data;
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const getLatestTransaction = async () => {
+    const { user } = storeToRefs(authStore);
+
+    if (!user.value?.id) {
+      return null;
+    }
+
+    try {
+      const res = await fetch(`/api/transaction/latest?id=${user.value.id}`, {
+        method: "GET",
+      });
+
+      const data = await res.json();
+
+      if (
+        data.transactionsToday.length <= 0 &&
+        data.transactionsYesterday.length <= 0
+      ) {
+        return null;
+      }
+
+      return data;
+    } catch (error) {
+      throw error;
+    }
   };
 
   return {
@@ -211,6 +262,8 @@ export const useTransactionStore = defineStore("transaction", () => {
     getTransaction,
     getDetailTransaction,
     getTransactionCurrentMonth,
+    getLatestTransaction,
+    getTotalTransaction,
     createTransaction,
     deleteTransaction,
     deleteSelectedTransaction,

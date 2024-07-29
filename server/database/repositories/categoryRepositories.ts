@@ -25,15 +25,22 @@ export const createCategory = async (
   });
 };
 
-export const getCategoryById = async (userId: string) => {
+export const getCategoryById = async (userId: string, type_id: number = 1) => {
   try {
     const categories = await prisma.category.findMany({
       where: {
-        user: {
-          some: {
-            user_id: userId,
+        AND: [
+          {
+            user: {
+              some: {
+                user_id: userId,
+              },
+            },
           },
-        },
+          {
+            type_id,
+          },
+        ],
       },
       select: {
         id: true,
@@ -43,7 +50,6 @@ export const getCategoryById = async (userId: string) => {
 
     return categories;
   } catch (error) {
-    console.error("Error fetching categories:", error);
     throw error;
   }
 };

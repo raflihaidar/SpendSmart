@@ -1,6 +1,6 @@
 import { prisma } from "~/server/database/client";
 import { Financial_Record, Transaction } from "@prisma/client";
-import { ITransaction, TransactionInput } from "~/types/ITransction";
+import { ITransaction } from "~/types/ITransction";
 import { toLocalISOString } from "~/utils/dateUtils";
 
 type FormattedTransaction = Omit<Transaction, "createdAt"> & {
@@ -79,6 +79,7 @@ export const getAllTransaction = async (
   userId: string | undefined
 ): Promise<FormattedTransaction[] | null> => {
   const transactions = await prisma.transaction.findMany({
+    take: 5,
     where: {
       user_id: userId,
     },
@@ -438,4 +439,122 @@ export const getTransactionByDate = async (
   });
 
   return filteredTransaction;
+};
+
+export const getTotalByType = async (user_id: string) => {
+  // Ambil transaksi untuk user_id tertentu
+  const transactions = await prisma.transaction.findMany({
+    where: { user_id: user_id },
+  });
+
+  // Mengelompokkan transaksi berdasarkan bulan dan tipe
+  const transactionByMonthAndType = transactions.reduce(
+    (result, { createdAt, amount, type_id }) => {
+      const month = new Date(createdAt).getMonth(); // Bulan dalam format 0-11
+
+      console.log(month);
+
+      // Inisialisasi array jika belum ada
+      if (!result[month]) {
+        result[month] = {};
+      }
+
+      // Inisialisasi total amount untuk type_id jika belum ada
+      if (!result[month][type_id]) {
+        result[month][type_id] = 0;
+      }
+
+      // Tambahkan jumlah sesuai dengan type_id
+      result[month][type_id] += amount;
+
+      return result;
+    },
+    {} as Record<number, Record<number, number>>
+  );
+
+  // Inisialisasi series data
+  const seriesData = [
+    { name: "Income", data: Array(12).fill(0) },
+    { name: "Expense", data: Array(12).fill(0) },
+  ];
+
+  // Isi series data berdasarkan hasil pengelompokan
+  Object.keys(transactionByMonthAndType).forEach((month) => {
+    const monthIndex = parseInt(month);
+    const monthData = transactionByMonthAndType[monthIndex];
+
+    if (monthData) {
+      if (monthData[1]) {
+        seriesData[0].data[monthIndex] = monthData[1]; // 1 untuk Income
+      }
+      if (monthData[2]) {
+        seriesData[1].data[monthIndex] = monthData[2]; // 2 untuk Expense
+      }
+    }
+  });
+
+  return seriesData;
+};
+
+export const getLatestTransaction = async (user_id: string) => {
+  const now = new Date();
+
+  // Awal hari ini
+  const startOfToday = new Date(now.setHours(0, 0, 0, 0));
+
+  // Awal hari kemarin
+  const startOfYesterday = new Date(startOfToday);
+  startOfYesterday.setDate(startOfToday.getDate() - 1);
+
+  // Akhir hari kemarin
+  const endOfYesterday = new Date(startOfToday);
+  endOfYesterday.setHours(-1); // Menetapkan ke 23:59:59 kemarin
+
+  // Transaksi hari ini
+  const transactionsToday = await prisma.transaction.findMany({
+    where: {
+      AND: [
+        {
+          user_id,
+        },
+        {
+          createdAt: {
+            gte: now,
+          },
+        },
+      ],
+    },
+    take: 5,
+  });
+
+  const take = transactionsToday.length - 5;
+
+  if (transactionsToday.length == 5) {
+    return {
+      transactionsToday,
+    };
+  }
+
+  // Transaksi hari kemarin
+  const transactionsYesterday = await prisma.transaction.findMany({
+    where: {
+      AND: [
+        {
+          user_id,
+        },
+        {
+          createdAt: {
+            gte: startOfYesterday,
+            lte: endOfYesterday,
+          },
+        },
+      ],
+    },
+    take: take,
+  });
+
+  return {
+    transactionsToday,
+    transactionsYesterday,
+  };
 };
