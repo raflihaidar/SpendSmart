@@ -114,7 +114,10 @@ onMounted(async () => {
               </div>
             </div>
             <div
-              v-if="latestTransaction.transactionsYesterday.length > 0"
+              v-if="
+                latestTransaction.transactionsYesterday &&
+                latestTransaction.transactionsYesterday.length > 0
+              "
               class="mt-5"
             >
               <p class="text-color3 text-sm font-semibold">Yesterday</p>
