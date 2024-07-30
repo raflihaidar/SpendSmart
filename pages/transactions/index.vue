@@ -8,6 +8,10 @@ definePageMeta({
   name: "transactions",
 });
 
+const currentPage = ref(0);
+const totalPages = ref(0);
+const totalResult = ref(0);
+
 const headerNames = ["Date", "Title", "Category", "Amount", "Actions", " "];
 const transactionStore = useTransactionStore();
 const { transactions, type, categories } = storeToRefs(transactionStore);
@@ -16,59 +20,10 @@ const selectedItem = ref<TransactionInput[]>([]);
 const isOpenModal = ref(false);
 const modalContent = ref<TransactionState | null>(null);
 
-const deleteTransaction = (id: string | undefined) => {
-  const swalWithBootstrapButtons = Swal.mixin({
-    customClass: {
-      confirmButton: "btn btn-success",
-      cancelButton: "btn btn-danger",
-    },
-    buttonsStyling: true,
-  });
-  swalWithBootstrapButtons
-    .fire({
-      title: "Are you sure?",
-      text: "You won't be able to revert this!",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonText: "Yes, delete it!",
-      cancelButtonText: "No, cancel!",
-      reverseButtons: true,
-    })
-    .then(async (result: any) => {
-      if (result.isConfirmed) {
-        await transactionStore
-          .deleteTransaction(id || "")
-          .then(() => {
-            swalWithBootstrapButtons.fire({
-              title: "Deleted!",
-              text: "Your transaction has been deleted.",
-              icon: "success",
-            });
-          })
-          .catch((error: any) => {
-            swalWithBootstrapButtons.fire({
-              title: "Cancelled",
-              text: error.message,
-              icon: "error",
-            });
-          });
-      } else if (
-        /* Read more about handling dismissals below */
-        result.dismiss === Swal.DismissReason.cancel
-      ) {
-        swalWithBootstrapButtons.fire({
-          title: "Delete Cancelled",
-          icon: "error",
-        });
-      }
-    });
-};
-
 const openModal = async (id: string) => {
   isOpenModal.value = true;
   const res = await transactionStore.getDetailTransaction(id);
   modalContent.value = res;
-  console.log("modalContent : ", modalContent.value);
 };
 
 const closeModal = async () => {
@@ -76,8 +31,18 @@ const closeModal = async () => {
   isOpenModal.value = false;
 };
 
-onMounted(() => {
-  transactionStore.getTransaction();
+const fetchTransactionsData = async (pageNumber: number = 1) => {
+  let data = await transactionStore.getTransaction(pageNumber);
+
+  if (data) {
+    currentPage.value = data.currentPages;
+    totalPages.value = data.totalPages;
+    totalResult.value = data.totalResult;
+  }
+};
+
+onMounted(async () => {
+  await fetchTransactionsData();
   transactionStore.getType();
   transactionStore.getCategories();
 });
@@ -109,8 +74,12 @@ const handleMultipleDelete = async () => {
             text: "Your transaction has been deleted.",
             icon: "success",
           });
-          transactionStore.getTransaction();
-        } catch (error: Error) {
+          if (transactions.value.length <= 0) {
+            await fetchTransactionsData();
+          } else {
+            await fetchTransactionsData(currentPage.value);
+          }
+        } catch (error: any) {
           swalWithBootstrapButtons.fire({
             title: "error",
             text: error.statusMessage,
@@ -118,6 +87,57 @@ const handleMultipleDelete = async () => {
           });
         }
       } else if (result.dismiss === Swal.DismissReason.cancel) {
+        swalWithBootstrapButtons.fire({
+          title: "Delete Cancelled",
+          icon: "error",
+        });
+      }
+    });
+};
+
+const deleteTransaction = (id: string | undefined) => {
+  const swalWithBootstrapButtons = Swal.mixin({
+    customClass: {
+      confirmButton: "btn btn-success",
+      cancelButton: "btn btn-danger",
+    },
+    buttonsStyling: true,
+  });
+  swalWithBootstrapButtons
+    .fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "No, cancel!",
+      reverseButtons: true,
+    })
+    .then(async (result: any) => {
+      if (result.isConfirmed) {
+        try {
+          await transactionStore.deleteTransaction(id || "");
+          swalWithBootstrapButtons.fire({
+            title: "Deleted!",
+            text: "Your transaction has been deleted.",
+            icon: "success",
+          });
+          if (transactions.value.length <= 0) {
+            await fetchTransactionsData();
+          } else {
+            await fetchTransactionsData(currentPage.value);
+          }
+        } catch (error: any) {
+          swalWithBootstrapButtons.fire({
+            title: "Cancelled",
+            text: error.message,
+            icon: "error",
+          });
+        }
+      } else if (
+        /* Read more about handling dismissals below */
+        result.dismiss === Swal.DismissReason.cancel
+      ) {
         swalWithBootstrapButtons.fire({
           title: "Delete Cancelled",
           icon: "error",
@@ -183,7 +203,7 @@ watch(
   <div class="bg-white shadow-sm rounded-xl h-full w-full px-5 py-10">
     <section class="flex justify-between w-full">
       <data class="flex w-auto gap-x-3">
-        <BaseDatePicker />
+        <!-- <BaseDatePicker /> -->
         <BaseSearch />
         <BaseButton
           eventType="filter"
@@ -203,13 +223,13 @@ watch(
           textColor="text-white"
           icon="ic:baseline-delete"
         />
-        <BaseButton
+        <!-- <BaseButton
           eventType="export"
           title="Export"
           width="max-w-28"
           borderColor="border-color3"
           icon="ic:baseline-download"
-        />
+        /> -->
         <NuxtLink to="/transactions/add">
           <BaseButton
             eventType=""
@@ -262,7 +282,12 @@ watch(
           </tr>
         </template>
       </BaseTable>
-      <BasePagination />
+      <BasePagination
+        v-model="currentPage"
+        :totalPages="totalPages"
+        :totalResult="totalResult"
+        @fetch-data="transactionStore.getTransaction"
+      />
     </section>
     <section class="text-center" v-else>
       <img
