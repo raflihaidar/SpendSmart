@@ -12,7 +12,7 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  const response = getCategoryById(userId, Number(typeId));
+  const response = getCategoryById(userId, typeId ? Number(typeId) : 1);
 
   if (!response) {
     throw createError({

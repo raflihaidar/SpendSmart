@@ -61,20 +61,35 @@ export const useTransactionStore = defineStore("transaction", () => {
     }
   };
 
-  const getTransaction = async (): Promise<void> => {
+  const getTransaction = async (
+    pageNumber: number = 1,
+    pageSize: number = 5
+  ): Promise<{
+    totalPages: number;
+    currentPages: number;
+    totalResult: number;
+  } | null> => {
     try {
       const { user } = storeToRefs(authStore);
 
-      if (user.value?.id) {
-        const response = await fetch(
-          `/api/transaction/user?id=${user.value.id}`
-        );
-        const data = await response.json();
-
-        transactions.value = data;
+      if (!user.value?.id) {
+        return null;
       }
+
+      const response = await fetch(
+        `/api/transaction/user?id=${user.value.id}&pageNumber=${pageNumber}&pageSize=${pageSize}`
+      );
+      const data = await response.json();
+
+      transactions.value = data.transactions;
+
+      return {
+        totalPages: data.totalPages,
+        currentPages: data.currentPages,
+        totalResult: data.totalResult,
+      };
     } catch (error) {
-      console.log(error);
+      throw error;
     }
   };
 
@@ -121,7 +136,7 @@ export const useTransactionStore = defineStore("transaction", () => {
 
   const editTransaction = async (payload: any): Promise<void | null> => {
     try {
-      const res = await $fetch(`/api/transaction/${payload.id}`, {
+      await $fetch(`/api/transaction/${payload.id}`, {
         method: "PATCH",
         body: {
           description: payload.description,
@@ -163,7 +178,7 @@ export const useTransactionStore = defineStore("transaction", () => {
     }
   };
 
-  const deleteSelectedTransaction = async (transaction: any) => {
+  const deleteSelectedTransaction = async (payload: any) => {
     const { user } = storeToRefs(authStore);
 
     if (!user.value?.id) {
@@ -171,14 +186,18 @@ export const useTransactionStore = defineStore("transaction", () => {
     }
 
     try {
-      const response = await $fetch("/api/transaction/multi", {
+      await $fetch("/api/transaction/multi", {
         method: "DELETE",
         body: {
-          transactionIds: transaction,
+          transactionIds: payload,
           userId: user.value.id,
         },
       });
-    } catch (error: Error) {
+
+      if (transactions.value.length == 1) {
+        transactions.value.slice();
+      }
+    } catch (error: any) {
       throw error;
     }
   };

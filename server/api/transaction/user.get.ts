@@ -1,11 +1,15 @@
-import { getAllTransaction } from "~/server/database/repositories/transactionRepositories";
+import { getTransactionsWithPagination } from "~/server/database/repositories/transactionRepositories";
 
 export default defineEventHandler(async (event) => {
-  const { id } = getQuery(event);
-  const transactions = await getAllTransaction(id?.toString());
+  const { id, pageNumber, pageSize } = getQuery(event);
 
-  if (transactions?.length == 0) {
-    console.log("error");
+  const transactions = await getTransactionsWithPagination(
+    id?.toString(),
+    Number(pageNumber),
+    Number(pageSize)
+  );
+
+  if (!transactions) {
     throw createError({
       statusCode: 404,
       statusMessage: "No Transactions Found",

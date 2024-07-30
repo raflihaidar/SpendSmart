@@ -3,7 +3,6 @@ import { RESPONSE_CODE } from "~/server/app/common/code";
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event);
-  console.log(body);
 
   const response = await createTransaction(body);
 
