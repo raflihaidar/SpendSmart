@@ -7,6 +7,13 @@ type FormattedTransaction = Omit<Transaction, "createdAt"> & {
   createdAt: string;
 };
 
+type PaginatedTransactions = {
+  transactions: FormattedTransaction[];
+  totalPages: number;
+  currentPages: number;
+  totalResult: number;
+};
+
 export const createTransaction = async (
   data: ITransaction
 ): Promise<Transaction | null> => {
@@ -75,33 +82,58 @@ export const createTransaction = async (
   }
 };
 
-export const getAllTransaction = async (
-  userId: string | undefined
-): Promise<FormattedTransaction[] | null> => {
-  const transactions = await prisma.transaction.findMany({
-    take: 5,
-    where: {
-      user_id: userId,
-    },
-    include: {
-      category: {
-        select: {
-          name: true,
+export const getTransactionsWithPagination = async (
+  userId: string | undefined,
+  pageNumber: number,
+  pageSize: number
+): Promise<PaginatedTransactions | null> => {
+  // Mendapatkan data yang akan diskip
+  const offset = (pageNumber - 1) * pageSize;
+
+  // Assign dua variable menggunakan Promise.all secara paralel (bersamaan) karena tidak saling mempengaruhi
+  const [transactions, totalTransactions] = await Promise.all([
+    prisma.transaction.findMany({
+      skip: offset,
+      take: pageSize,
+      where: {
+        user_id: userId,
+      },
+      include: {
+        category: {
+          select: {
+            name: true,
+          },
         },
       },
-    },
-    orderBy: {
-      createdAt: "desc",
-    },
-  });
+      orderBy: {
+        createdAt: "desc",
+      },
+    }),
+    prisma.transaction.count({
+      where: {
+        user_id: userId,
+      },
+    }),
+  ]);
+
+  const totalPages = Math.ceil(totalTransactions / pageSize);
 
   if (!transactions) return null;
 
   // Manipulasi createdAt menjadi format yang lebih mudah dibaca
-  return transactions.map((transaction) => ({
-    ...transaction,
-    createdAt: new Date(transaction.createdAt).toLocaleDateString("id-ID"),
-  }));
+  const newFormatTransactions: FormattedTransaction[] = transactions.map(
+    (transaction) => ({
+      ...transaction,
+      createdAt: new Date(transaction.createdAt).toLocaleDateString("id-ID"),
+    })
+  );
+
+  return {
+    transactions: newFormatTransactions,
+    totalPages,
+    currentPages: pageNumber,
+    totalResult: totalTransactions,
+  };
 };
 
 export const updateTransaction = async (
