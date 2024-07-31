@@ -270,6 +270,28 @@ export const useTransactionStore = defineStore("transaction", () => {
     }
   };
 
+  const searchTransaction = async (payload: string, pageNumber: number) => {
+    const { user } = storeToRefs(authStore);
+
+    if (!user.value) {
+      return null;
+    }
+
+    try {
+      const res = await fetch(
+        `/api/transaction/search?userId=${user.value.id}&q=${payload}&pageNumber=${pageNumber}&pageSize=5`,
+        {
+          method: "GET",
+        }
+      );
+
+      const data = await res.json();
+      transactions.value = data.transactions;
+    } catch (error) {
+      throw error;
+    }
+  };
+
   return {
     transactions,
     categories,
@@ -287,5 +309,6 @@ export const useTransactionStore = defineStore("transaction", () => {
     deleteTransaction,
     deleteSelectedTransaction,
     editTransaction,
+    searchTransaction,
   };
 });

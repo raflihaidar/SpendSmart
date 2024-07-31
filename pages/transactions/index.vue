@@ -11,6 +11,7 @@ definePageMeta({
 const currentPage = ref(0);
 const totalPages = ref(0);
 const totalResult = ref(0);
+const searchQuery = ref("");
 
 const headerNames = ["Date", "Title", "Category", "Amount", "Actions", " "];
 const transactionStore = useTransactionStore();
@@ -197,6 +198,25 @@ watch(
     await transactionStore.getCategories(newValue);
   }
 );
+
+watch(
+  () => searchQuery.value,
+  async (newValue: any) => {
+    if (newValue == "") {
+      await fetchTransactionsData();
+    } else {
+      let data: any = await transactionStore.searchTransaction(
+        searchQuery.value,
+        currentPage.value
+      );
+      if (data) {
+        currentPage.value = data.currentPages;
+        totalPages.value = data.totalPages;
+        totalResult.value = data.totalResult;
+      }
+    }
+  }
+);
 </script>
 
 <template>
@@ -204,7 +224,7 @@ watch(
     <section class="flex justify-between w-full">
       <data class="flex w-auto gap-x-3">
         <!-- <BaseDatePicker /> -->
-        <BaseSearch />
+        <BaseSearch v-model="searchQuery" />
         <BaseButton
           eventType="filter"
           title="Filter"
