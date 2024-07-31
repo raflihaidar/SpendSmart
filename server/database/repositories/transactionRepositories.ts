@@ -35,20 +35,6 @@ export const createTransaction = async (
         },
       });
 
-      await tx.userCategory.update({
-        where: {
-          user_id_category_id: {
-            user_id: data.user_id,
-            category_id: data.category_id,
-          },
-        },
-        data: {
-          total: {
-            increment: 1,
-          },
-        },
-      });
-
       const { type_id, user_id, amount } = transaction;
       // Increment income and balance for user's financial record
       const balance = await tx.user.update({
@@ -241,20 +227,6 @@ export const deleteTransaction = async (
         },
       });
 
-      await tx.userCategory.update({
-        where: {
-          user_id_category_id: {
-            user_id: transaction.user_id,
-            category_id: transaction.category_id,
-          },
-        },
-        data: {
-          total: {
-            decrement: 1,
-          },
-        },
-      });
-
       // Ambil data yang diperlukan dari transaksi yang dihapus
       const { type_id, amount } = transaction;
 
@@ -269,7 +241,7 @@ export const deleteTransaction = async (
               },
               income: type_id === 1 ? { decrement: amount } : { decrement: 0 },
               expense: type_id === 2 ? { decrement: amount } : { decrement: 0 },
-              updatedAt: new Date(), // Misalnya menggunakan tanggal saat ini
+              updatedAt: new Date(),
             },
           },
         },
@@ -345,16 +317,6 @@ export const deleteMultipleTransaction = async (
       },
     });
 
-    // Update total kategori berdasarkan jumlah transaksi yang dihapus
-    await Promise.all(
-      Object.entries(categoryTransactionCount).map(([categoryId, count]) =>
-        tx.userCategory.updateMany({
-          where: { category_id: Number(categoryId) },
-          data: { total: { decrement: count } },
-        })
-      )
-    );
-
     return transaction.count;
   });
 };
@@ -376,7 +338,6 @@ export const getTransactionById = async (
   });
 
   if (!transaction) {
-    console.log("tidak ada");
     return null;
   }
 
@@ -588,5 +549,63 @@ export const getLatestTransaction = async (user_id: string) => {
   return {
     transactionsToday,
     transactionsYesterday,
+  };
+};
+
+export const searchTransactions = async (
+  target: string,
+  userId: string,
+  pageNumber: number,
+  pageSize: number
+): Promise<PaginatedTransactions | null> => {
+  // Mendapatkan data yang akan diskip
+  const offset = (pageNumber - 1) * pageSize;
+
+  // Assign dua variable menggunakan Promise.all secara paralel (bersamaan) karena tidak saling mempengaruhi
+  const [transactions, totalTransactions] = await Promise.all([
+    prisma.transaction.findMany({
+      skip: offset,
+      take: pageSize,
+      where: {
+        description: {
+          search: `${target}*`,
+        },
+        user_id: userId,
+      },
+      include: {
+        category: {
+          select: {
+            name: true,
+          },
+        },
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    }),
+    prisma.transaction.count({
+      where: {
+        user_id: userId,
+      },
+    }),
+  ]);
+
+  const totalPages = Math.ceil(totalTransactions / pageSize);
+
+  if (!transactions) return null;
+
+  // Manipulasi createdAt menjadi format yang lebih mudah dibaca
+  const newFormatTransactions: FormattedTransaction[] = transactions.map(
+    (transaction) => ({
+      ...transaction,
+      createdAt: new Date(transaction.createdAt).toLocaleDateString("id-ID"),
+    })
+  );
+
+  return {
+    transactions: newFormatTransactions,
+    totalPages,
+    currentPages: pageNumber,
+    totalResult: totalTransactions,
   };
 };
