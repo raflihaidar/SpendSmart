@@ -19,7 +19,7 @@ const payload = reactive({
   description: null,
   amount: null,
   createdAt: null,
-  type_id: null,
+  type_id: 1,
   category_id: null,
 });
 
@@ -29,11 +29,11 @@ const sendData = async (paylod: any) => {
     payload.description = null;
     payload.amount = null;
     payload.createdAt = null;
-    payload.type_id = null;
+    payload.type_id = 1;
     payload.category_id = null;
     isError.value.status = false;
     isError.value.message = res || "";
-  } catch (error: Error) {
+  } catch (error: any) {
     isError.value.message = error.statusMessage;
     isError.value.status = true;
   }
@@ -46,7 +46,7 @@ onMounted(() => {
 
 watch(
   () => payload.type_id,
-  async (newValue: any) => {
+  async (newValue: number) => {
     await store.getCategories(newValue);
   }
 );
