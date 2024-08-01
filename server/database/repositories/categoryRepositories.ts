@@ -17,7 +17,6 @@ export const createCategory = async (
       data: {
         user_id: data.user_id,
         category_id: category.id,
-        total: 1,
       },
     });
 

@@ -3,7 +3,7 @@ import type { TransactionInput, TransactionState } from "~/types/ITransction";
 
 export const useTransactionStore = defineStore("transaction", () => {
   const transactions = ref<TransactionInput[]>([]);
-  const categories = ref([]);
+  const categories = ref<{ id: number; name: string; type_id: number }[]>([]);
   const type = ref([]);
   const expensesCategories = ref([]);
   const authStore = useAuthStore();
@@ -39,7 +39,7 @@ export const useTransactionStore = defineStore("transaction", () => {
       const data = await response.json();
       categories.value = data;
     } catch (error) {
-      console.log(error);
+      throw error;
     }
   };
 
@@ -129,6 +129,41 @@ export const useTransactionStore = defineStore("transaction", () => {
       }
 
       return response.message;
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const createCategory = async (payload: {
+    name: string | null;
+    typeId: number | null;
+  }) => {
+    const { user } = storeToRefs(authStore);
+
+    if (!user.value) {
+      throw createError({
+        statusCode: 404,
+        statusMessage: "Id User Not Found",
+      });
+    }
+
+    if (!payload) {
+      throw createError({
+        statusCode: 404,
+        statusMessage: "Payload Not Found",
+      });
+    }
+
+    try {
+      const res = await $fetch("/api/category/create", {
+        method: "POST",
+        body: {
+          user_id: user.value.id,
+          name: payload.name,
+          type_id: payload.typeId,
+        },
+      });
+      categories.value.push(res);
     } catch (error) {
       throw error;
     }
@@ -306,6 +341,7 @@ export const useTransactionStore = defineStore("transaction", () => {
     getLatestTransaction,
     getTotalTransaction,
     createTransaction,
+    createCategory,
     deleteTransaction,
     deleteSelectedTransaction,
     editTransaction,
