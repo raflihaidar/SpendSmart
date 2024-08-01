@@ -52,3 +52,32 @@ export const getCategoryById = async (userId: string, type_id: number = 1) => {
     throw error;
   }
 };
+
+export const deleteCategory = async (userId: string) => {
+  try {
+  } catch (error) {
+  } finally {
+  }
+};
+
+export const updateCategory = async (
+  id: number,
+  name: string
+): Promise<Category | null> => {
+  try {
+    const result = await prisma.category.update({
+      where: {
+        id,
+      },
+      data: {
+        name,
+      },
+    });
+
+    return result;
+  } catch (error) {
+    throw error;
+  } finally {
+    await prisma.$disconnect;
+  }
+};

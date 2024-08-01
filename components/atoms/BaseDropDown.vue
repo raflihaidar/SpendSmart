@@ -1,18 +1,24 @@
 <script setup lang="ts">
-import { defineProps, defineEmits, toRefs, watch } from "vue";
+import { defineProps, defineEmits, toRefs, ref, watch } from "vue";
 
 const props = defineProps<{
   datas: Array<{ id: number; name: string }>;
   width?: string;
   border?: string;
   borderColor?: string;
-  modelValue: string | number | boolean | null;
+  modelValue: number | null;
+  enableEdit?: {
+    type: boolean;
+    default: false;
+  };
 }>();
+
 const emit = defineEmits(["update:modelValue"]);
 
 const { datas, modelValue } = toRefs(props);
 const currentValue = ref("");
 const isOpen = ref(false);
+const editingItemId = ref<number | null>(null);
 
 const handleChange = (itemName: string, itemId: number) => {
   currentValue.value = itemName;
@@ -20,22 +26,58 @@ const handleChange = (itemName: string, itemId: number) => {
   isOpen.value = false;
 };
 
+const handleEdit = (itemId: number) => {
+  if (editingItemId.value === itemId) {
+    console.log("save");
+    editingItemId.value = null;
+  } else {
+    editingItemId.value = itemId;
+  }
+};
+
 const openOption = () => {
   isOpen.value = !isOpen.value;
 };
 
-watchEffect(() => {
-  if (datas.value.length > 0 && modelValue.value === null) {
-    emit("update:modelValue", datas.value[0].id);
+// Watch for changes in datas and update currentValue and modelValue accordingly
+watch(
+  () => datas.value,
+  (newDatas: any) => {
+    console.log("new data : ", newDatas);
+    console.log("modelValue : ", modelValue.value);
+    if (newDatas.length > 0) {
+      const selectedValue = newDatas.find(
+        (data: any) => data.id === modelValue.value
+      );
+      if (selectedValue) {
+        console.log("Berhasil");
+        currentValue.value = selectedValue.name;
+      } else {
+        emit("update:modelValue", newDatas[0].id);
+        currentValue.value = newDatas[0].name;
+      }
+    } else {
+      currentValue.value = "";
+    }
   }
-});
+);
 
-watch(datas, () => {
-  if (datas.value.length > 0) {
-    emit("update:modelValue", datas.value[0].id);
-    currentValue.value = datas.value[0].name;
+// Watch for changes in modelValue and update currentValue accordingly
+watch(
+  () => modelValue.value,
+  (newValue: any) => {
+    console.log("new model value : ", modelValue.value);
+    const value = datas.value.find((data: any) => data.id === newValue);
+    if (value) {
+      currentValue.value = value.name;
+    } else {
+      currentValue.value = "";
+    }
+  },
+  {
+    immediate: true,
   }
-});
+);
 </script>
 
 <template>
@@ -54,20 +96,44 @@ watch(datas, () => {
       {{ currentValue }}
       <Icon name="ic:round-keyboard-arrow-down" size="1.5rem" />
     </button>
-    <div
+    <ul
       v-if="isOpen"
       class="absolute top-10 left-0 bg-white z-20 w-full origin-top-right rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
     >
-      <p
+      <li
         v-for="(item, index) in datas"
         :key="index"
         :value="item.id"
-        @click="handleChange(item.name, item.id)"
-        class="w-full px-3 py-2 cursor-pointer hover:bg-gray-100 transition-colors"
+        class="w-full px-3 py-2 cursor-pointer hover:bg-gray-100 transition-colors flex items-center justify-between"
       >
-        {{ item.name }}
-      </p>
+        <p
+          v-if="editingItemId !== item.id"
+          @click="handleChange(item.name, item.id)"
+          class="w-full block"
+        >
+          {{ item.name }}
+        </p>
+
+        <span v-else class="flex gap-x-3 items-center w-[90%]">
+          <input
+            class="w-full bg-inherit outline-none border border-color3 px-2 py-1 rounded-md"
+            :value="item.name"
+          />
+          <Icon
+            name="ic:baseline-delete"
+            size="1.5rem"
+            class="bg-red-500 cursor-pointer"
+          />
+        </span>
+        <Icon
+          v-if="props.enableEdit"
+          name="ic:round-app-registration"
+          size="1.5rem"
+          class="bg-gray-400 hover:bg-gray-500 z-20"
+          @click="handleEdit(item.id)"
+        />
+      </li>
       <slot name="tools"> </slot>
-    </div>
+    </ul>
   </div>
 </template>

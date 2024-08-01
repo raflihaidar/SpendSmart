@@ -41,12 +41,6 @@ const fetchTransactionsData = async (pageNumber: number = 1) => {
   }
 };
 
-onMounted(async () => {
-  await fetchTransactionsData();
-  transactionStore.getType();
-  transactionStore.getCategories();
-});
-
 const handleMultipleDelete = async () => {
   const swalWithBootstrapButtons = Swal.mixin({
     customClass: {
@@ -94,7 +88,6 @@ const handleMultipleDelete = async () => {
       }
     });
 };
-
 const deleteTransaction = (id: string | undefined) => {
   const swalWithBootstrapButtons = Swal.mixin({
     customClass: {
@@ -145,7 +138,6 @@ const deleteTransaction = (id: string | undefined) => {
       }
     });
 };
-
 const handleEdit = async () => {
   const swalWithBootstrapButtons = Swal.mixin({
     customClass: {
@@ -190,6 +182,12 @@ const handleEdit = async () => {
       }
     });
 };
+
+onMounted(async () => {
+  await fetchTransactionsData();
+  await transactionStore.getType();
+  await transactionStore.getCategories();
+});
 
 watch(
   () => modalContent.value?.type_id,

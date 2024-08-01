@@ -110,6 +110,7 @@ watch(
             width="w-full"
             border="border"
             borderColor="border-color3"
+            :enableEdit="true"
             class="text-sm px-3 py-2"
           >
             <template #tools>
