@@ -12,14 +12,13 @@ const currentPage = ref(0);
 const totalPages = ref(0);
 const totalResult = ref(0);
 const searchQuery = ref("");
+const selectedItem = ref<TransactionInput[]>([]);
+const isOpenModal = ref(false);
+const modalContent = ref<TransactionState | null>(null);
 
 const headerNames = ["Date", "Title", "Category", "Amount", "Actions", " "];
 const transactionStore = useTransactionStore();
 const { transactions, type, categories } = storeToRefs(transactionStore);
-
-const selectedItem = ref<TransactionInput[]>([]);
-const isOpenModal = ref(false);
-const modalContent = ref<TransactionState | null>(null);
 
 const openModal = async (id: string) => {
   isOpenModal.value = true;
@@ -41,12 +40,6 @@ const fetchTransactionsData = async (pageNumber: number = 1) => {
     totalResult.value = data.totalResult;
   }
 };
-
-onMounted(async () => {
-  await fetchTransactionsData();
-  transactionStore.getType();
-  transactionStore.getCategories();
-});
 
 const handleMultipleDelete = async () => {
   const swalWithBootstrapButtons = Swal.mixin({
@@ -95,7 +88,6 @@ const handleMultipleDelete = async () => {
       }
     });
 };
-
 const deleteTransaction = (id: string | undefined) => {
   const swalWithBootstrapButtons = Swal.mixin({
     customClass: {
@@ -146,7 +138,6 @@ const deleteTransaction = (id: string | undefined) => {
       }
     });
 };
-
 const handleEdit = async () => {
   const swalWithBootstrapButtons = Swal.mixin({
     customClass: {
@@ -192,6 +183,12 @@ const handleEdit = async () => {
     });
 };
 
+onMounted(async () => {
+  await fetchTransactionsData();
+  await transactionStore.getType();
+  await transactionStore.getCategories();
+});
+
 watch(
   () => modalContent.value?.type_id,
   async (newValue: any) => {
@@ -225,13 +222,32 @@ watch(
       <data class="flex w-auto gap-x-3">
         <!-- <BaseDatePicker /> -->
         <BaseSearch v-model="searchQuery" />
-        <BaseButton
-          eventType="filter"
-          title="Filter"
-          width="max-w-28"
-          icon="ic:baseline-filter-alt"
+        <!-- <BaseDropDown
+          :datas="type"
+          width="w-full"
+          border="border"
           borderColor="border-color3"
-        />
+          class="text-sm px-3 py-2"
+        /> -->
+        <!-- <div class="relative">
+          <BaseButton
+            eventType="filter"
+            title="Filter"
+            width="max-w-28"
+            icon="ic:baseline-filter-alt"
+            borderColor="border-color3"
+            class="relative"
+          />
+          <ul
+            class="absolute bg-white z-20 w-full origin-top-right rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+          >
+            <li
+              class="w-full px-3 py-2 cursor-pointer hover:bg-gray-100 transition-colors"
+            >
+              Tets
+            </li>
+          </ul>
+        </div> -->
       </data>
       <div class="flex w-auto gap-x-3">
         <BaseButton

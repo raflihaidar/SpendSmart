@@ -7,14 +7,12 @@ import type { ITransaction, TransactionState } from "~/types/ITransction";
 const store = useTransactionStore();
 const router = useRouter();
 const datePicker = ref<HTMLElement | null>(null);
-
 const isError = ref({
   status: false,
   message: "",
 });
-
+const inputDropDown = ref(false);
 const { categories, type } = storeToRefs(store);
-
 const payload = reactive({
   description: null,
   amount: null,
@@ -22,8 +20,13 @@ const payload = reactive({
   type_id: 1,
   category_id: null,
 });
+const payloadCategory: { name: string | null; typeId: number | null } =
+  reactive({
+    name: null,
+    typeId: 1,
+  });
 
-const sendData = async (paylod: any) => {
+const sendData = async (payload: any) => {
   try {
     const res = await store.createTransaction(payload);
     payload.description = null;
@@ -39,6 +42,11 @@ const sendData = async (paylod: any) => {
   }
 };
 
+const addNewCategory = () => {
+  store.createCategory(payloadCategory);
+  inputDropDown.value = false;
+};
+
 onMounted(() => {
   store.getCategories();
   store.getType();
@@ -48,6 +56,7 @@ watch(
   () => payload.type_id,
   async (newValue: number) => {
     await store.getCategories(newValue);
+    payloadCategory.typeId = newValue;
   }
 );
 </script>
@@ -86,11 +95,11 @@ watch(
           <p class="text-md font-bold mb-2">Type</p>
           <BaseDropDown
             :datas="type"
+            v-model="payload.type_id"
             width="w-full"
             border="border"
             borderColor="border-color3"
             class="text-sm px-3 py-2"
-            v-model="payload.type_id"
           />
         </section>
         <section class="w-full bg-white shadow-sm rounded-lg px-3 py-4">
@@ -98,11 +107,48 @@ watch(
           <BaseDropDown
             :datas="categories"
             v-model="payload.category_id"
+            @edit="store.editCategory"
+            @delete="store.deleteCategory"
             width="w-full"
             border="border"
             borderColor="border-color3"
+            :enableEdit="true"
             class="text-sm px-3 py-2"
-          />
+          >
+            <template #tools>
+              <div
+                v-if="!inputDropDown"
+                @click="inputDropDown = true"
+                class="flex items-center px-3 py-2 gap-x-2 cursor-pointer hover:bg-gray-100 hover:underline transition-colors"
+              >
+                <Icon name="ic:round-add-box" size="1.5rem" />
+                <p>Add new category</p>
+              </div>
+              <div
+                v-else
+                class="flex justify-between items-center px-3 py-3 gap-x-5"
+              >
+                <BaseInput
+                  inputType="text"
+                  id="Description"
+                  placeHolder="Add new category"
+                  v-model="payloadCategory.name"
+                />
+                <Icon
+                  name="ic:baseline-cancel"
+                  size="2rem"
+                  @click="inputDropDown = false"
+                  class="bg-red-500 cursor-pointer"
+                />
+                <Icon
+                  name="ic:baseline-save"
+                  size="2rem"
+                  @click="addNewCategory"
+                  class="bg-color1 cursor-pointer"
+                />
+              </div>
+            </template>
+          </BaseDropDown>
         </section>
         <section class="w-full bg-white shadow-sm rounded-lg px-3 py-4">
           <p class="text-md font-bold mb-2">Date</p>

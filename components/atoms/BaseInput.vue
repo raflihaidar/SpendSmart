@@ -5,7 +5,7 @@
       autocomplete="off"
       :id="id"
       :placeholder="placeHolder"
-      class="border border-border rounded-xl outline-border p-3 text-sm"
+      class="border border-border rounded-xl outline-border p-3 text-sm w-full"
       v-model="inputValue"
       @input="handleInput($event)"
     />
