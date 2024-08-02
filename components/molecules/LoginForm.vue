@@ -8,7 +8,7 @@ const store = useAuthStore();
 
 const { user } = storeToRefs(store);
 const { signIn, getSession } = useAuth();
-let error = ref<string | null>(null);
+let error = ref<string>("");
 
 const handleSignIn = async () => {
   try {
@@ -37,7 +37,6 @@ const socialAction = async (action: string) => {
   try {
     isLoading.value = true;
     let result = await signIn(action, { redirect: true });
-    console.log("result : ", result);
 
     if (result?.ok && !result.error) {
       await navigateTo("/");
@@ -76,7 +75,7 @@ const socialAction = async (action: string) => {
     </div>
     <BaseSeperator text="Or continue with email" />
     <div class="mt-5 flex flex-col gap-y-5">
-      <BaseMessages messageType="error" :message="error" />
+      <BaseMessages :is-error="true" :message="error" />
       <section class="grid gap-y-1">
         <BaseLabel name="email" />
         <BaseInput

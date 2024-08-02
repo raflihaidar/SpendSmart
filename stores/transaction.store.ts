@@ -1,9 +1,10 @@
 import { defineStore } from "pinia";
+import { RESPONSE_CODE } from "~/server/app/common/code";
 import type { TransactionInput, TransactionState } from "~/types/ITransction";
 
 export const useTransactionStore = defineStore("transaction", () => {
   const transactions = ref<TransactionInput[]>([]);
-  const categories = ref([]);
+  const categories = ref<{ id: number; name: string; type_id: number }[]>([]);
   const type = ref([]);
   const expensesCategories = ref([]);
   const authStore = useAuthStore();
@@ -39,7 +40,7 @@ export const useTransactionStore = defineStore("transaction", () => {
       const data = await response.json();
       categories.value = data;
     } catch (error) {
-      console.log(error);
+      throw error;
     }
   };
 
@@ -134,6 +135,41 @@ export const useTransactionStore = defineStore("transaction", () => {
     }
   };
 
+  const createCategory = async (payload: {
+    name: string | null;
+    typeId: number | null;
+  }) => {
+    const { user } = storeToRefs(authStore);
+
+    if (!user.value) {
+      throw createError({
+        statusCode: 404,
+        statusMessage: "Id User Not Found",
+      });
+    }
+
+    if (!payload) {
+      throw createError({
+        statusCode: 404,
+        statusMessage: "Payload Not Found",
+      });
+    }
+
+    try {
+      const res = await $fetch("/api/category/create", {
+        method: "POST",
+        body: {
+          name: payload.name,
+          user_id: user.value.id,
+          type_id: payload.typeId,
+        },
+      });
+      categories.value.push(res);
+    } catch (error) {
+      throw error;
+    }
+  };
+
   const editTransaction = async (payload: any): Promise<void | null> => {
     try {
       await $fetch(`/api/transaction/${payload.id}`, {
@@ -147,6 +183,21 @@ export const useTransactionStore = defineStore("transaction", () => {
           user_id: payload.user_id,
         },
       });
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const editCategory = async (id: number, name: String) => {
+    try {
+      const res = await $fetch(`/api/category/${id}`, {
+        method: "PATCH",
+        body: {
+          name,
+        },
+      });
+
+      console.log(res);
     } catch (error) {
       throw error;
     }
@@ -196,6 +247,20 @@ export const useTransactionStore = defineStore("transaction", () => {
 
       if (transactions.value.length == 1) {
         transactions.value.slice();
+      }
+    } catch (error: any) {
+      throw error;
+    }
+  };
+
+  const deleteCategory = async (id: number) => {
+    try {
+      const res = await $fetch(`/api/category/${id}`, {
+        method: "delete",
+      });
+
+      if (res) {
+        await getCategories(res.type_id);
       }
     } catch (error: any) {
       throw error;
@@ -270,6 +335,28 @@ export const useTransactionStore = defineStore("transaction", () => {
     }
   };
 
+  const searchTransaction = async (payload: string, pageNumber: number) => {
+    const { user } = storeToRefs(authStore);
+
+    if (!user.value) {
+      return null;
+    }
+
+    try {
+      const res = await fetch(
+        `/api/transaction/search?userId=${user.value.id}&q=${payload}&pageNumber=${pageNumber}&pageSize=5`,
+        {
+          method: "GET",
+        }
+      );
+
+      const data = await res.json();
+      transactions.value = data.transactions;
+    } catch (error) {
+      throw error;
+    }
+  };
+
   return {
     transactions,
     categories,
@@ -284,8 +371,12 @@ export const useTransactionStore = defineStore("transaction", () => {
     getLatestTransaction,
     getTotalTransaction,
     createTransaction,
+    createCategory,
     deleteTransaction,
     deleteSelectedTransaction,
+    deleteCategory,
     editTransaction,
+    editCategory,
+    searchTransaction,
   };
 });

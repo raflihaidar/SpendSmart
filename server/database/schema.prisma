@@ -1,6 +1,6 @@
 generator client {
   provider        = "prisma-client-js"
-  previewFeatures = ["relationJoins"]
+  previewFeatures = ["relationJoins", "fullTextSearch", "fullTextIndex"]
 }
 
 datasource db {
@@ -17,7 +17,7 @@ model User {
   financial_record_id String           @unique
   account             account?
   transaction         Transaction[]
-  category            UserCategory[]
+  category            Category[]
   financial_record    Financial_Record @relation(fields: [financial_record_id], references: [id])
 
   @@map("users")
@@ -49,6 +49,7 @@ model Transaction {
   @@index([type_id], map: "transactions_type_id_fkey")
   @@index([category_id], map: "transactions_category_id_fkey")
   @@index([user_id], map: "transactions_user_id_fkey")
+  @@fulltext([description])
   @@map("transactions")
 }
 
@@ -63,29 +64,17 @@ model Type {
 
 model Category {
   id      Int               @id @default(autoincrement())
-  name    String             @db.VarChar(20)
+  name    String            @db.VarChar(20)
   type_id Int
+  user_id String
   type    Type              @relation(fields: [type_id], references: [id])
-  user    UserCategory[]
+  user    User              @relation(fields: [user_id], references: [id])
   transaction Transaction[]
 
   @@index([type_id], map: "categories_type_id_fkey")
   @@map("categories")
 }
 
-
-model UserCategory {
-  user_id       String   @db.VarChar(255)
-  category_id   Int
-  total         Int 
-  user          User     @relation(fields: [user_id], references: [id])
-  category      Category @relation(fields: [category_id], references: [id])
-
-  @@id([user_id, category_id])
-  @@index([user_id], map: "user_categories_user_id_fkey")
-  @@index([category_id], map: "user_categories_category_id_fkey")
-  @@map("user_category")
-}
 
 model account {
   id                Int      @id @default(autoincrement())

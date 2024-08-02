@@ -98,7 +98,13 @@ const onSubmit = handleSubmit(async (values: any) => {
           id="confirm_password"
         />
       </section>
-      <BaseButton eventType="signin" :title="!isLoading ? 'sign up' : ''" />
+      <BaseButton
+        eventType="signin"
+        bgColor="bg-color1"
+        textColor="text-white"
+        borderColor="border-border"
+        :title="!isLoading ? 'sign up' : ''"
+      />
     </form>
     <p class="mt-5 text-center">
       Already have an account?
