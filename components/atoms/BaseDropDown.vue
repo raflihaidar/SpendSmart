@@ -13,7 +13,7 @@ const props = defineProps<{
   };
 }>();
 
-const emit = defineEmits(["update:modelValue"]);
+const emit = defineEmits(["update:modelValue", "edit", "delete"]);
 
 const { datas, modelValue } = toRefs(props);
 const currentValue = ref("");
@@ -26,13 +26,17 @@ const handleChange = (itemName: string, itemId: number) => {
   isOpen.value = false;
 };
 
-const handleEdit = (itemId: number) => {
+const handleEdit = (itemId: number, itemName: string) => {
   if (editingItemId.value === itemId) {
-    console.log("save");
+    emit("edit", itemId, itemName);
     editingItemId.value = null;
   } else {
     editingItemId.value = itemId;
   }
+};
+
+const handleDelete = (itemId: number) => {
+  emit("delete", itemId);
 };
 
 const openOption = () => {
@@ -43,14 +47,11 @@ const openOption = () => {
 watch(
   () => datas.value,
   (newDatas: any) => {
-    console.log("new data : ", newDatas);
-    console.log("modelValue : ", modelValue.value);
     if (newDatas.length > 0) {
       const selectedValue = newDatas.find(
         (data: any) => data.id === modelValue.value
       );
       if (selectedValue) {
-        console.log("Berhasil");
         currentValue.value = selectedValue.name;
       } else {
         emit("update:modelValue", newDatas[0].id);
@@ -59,6 +60,9 @@ watch(
     } else {
       currentValue.value = "";
     }
+  },
+  {
+    deep: true,
   }
 );
 
@@ -117,12 +121,13 @@ watch(
         <span v-else class="flex gap-x-3 items-center w-[90%]">
           <input
             class="w-full bg-inherit outline-none border border-color3 px-2 py-1 rounded-md"
-            :value="item.name"
+            v-model="item.name"
           />
           <Icon
             name="ic:baseline-delete"
             size="1.5rem"
             class="bg-red-500 cursor-pointer"
+            @click="handleDelete(item.id, index)"
           />
         </span>
         <Icon
@@ -130,7 +135,7 @@ watch(
           name="ic:round-app-registration"
           size="1.5rem"
           class="bg-gray-400 hover:bg-gray-500 z-20"
-          @click="handleEdit(item.id)"
+          @click="handleEdit(item.id, item.name)"
         />
       </li>
       <slot name="tools"> </slot>

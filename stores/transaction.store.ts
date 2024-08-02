@@ -1,4 +1,5 @@
 import { defineStore } from "pinia";
+import { RESPONSE_CODE } from "~/server/app/common/code";
 import type { TransactionInput, TransactionState } from "~/types/ITransction";
 
 export const useTransactionStore = defineStore("transaction", () => {
@@ -158,8 +159,8 @@ export const useTransactionStore = defineStore("transaction", () => {
       const res = await $fetch("/api/category/create", {
         method: "POST",
         body: {
-          user_id: user.value.id,
           name: payload.name,
+          user_id: user.value.id,
           type_id: payload.typeId,
         },
       });
@@ -182,6 +183,21 @@ export const useTransactionStore = defineStore("transaction", () => {
           user_id: payload.user_id,
         },
       });
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const editCategory = async (id: number, name: String) => {
+    try {
+      const res = await $fetch(`/api/category/${id}`, {
+        method: "PATCH",
+        body: {
+          name,
+        },
+      });
+
+      console.log(res);
     } catch (error) {
       throw error;
     }
@@ -231,6 +247,20 @@ export const useTransactionStore = defineStore("transaction", () => {
 
       if (transactions.value.length == 1) {
         transactions.value.slice();
+      }
+    } catch (error: any) {
+      throw error;
+    }
+  };
+
+  const deleteCategory = async (id: number) => {
+    try {
+      const res = await $fetch(`/api/category/${id}`, {
+        method: "delete",
+      });
+
+      if (res) {
+        await getCategories(res.type_id);
       }
     } catch (error: any) {
       throw error;
@@ -344,7 +374,9 @@ export const useTransactionStore = defineStore("transaction", () => {
     createCategory,
     deleteTransaction,
     deleteSelectedTransaction,
+    deleteCategory,
     editTransaction,
+    editCategory,
     searchTransaction,
   };
 });

@@ -23,7 +23,7 @@ const payload = reactive({
 const payloadCategory: { name: string | null; typeId: number | null } =
   reactive({
     name: null,
-    typeId: null,
+    typeId: 1,
   });
 
 const sendData = async (payload: any) => {
@@ -95,11 +95,11 @@ watch(
           <p class="text-md font-bold mb-2">Type</p>
           <BaseDropDown
             :datas="type"
+            v-model="payload.type_id"
             width="w-full"
             border="border"
             borderColor="border-color3"
             class="text-sm px-3 py-2"
-            v-model="payload.type_id"
           />
         </section>
         <section class="w-full bg-white shadow-sm rounded-lg px-3 py-4">
@@ -107,6 +107,8 @@ watch(
           <BaseDropDown
             :datas="categories"
             v-model="payload.category_id"
+            @edit="store.editCategory"
+            @delete="store.deleteCategory"
             width="w-full"
             border="border"
             borderColor="border-color3"
