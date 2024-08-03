@@ -27,7 +27,7 @@ export default NuxtAuthHandler({
       return session;
     },
   },
-  secret: process.env.NEXTAUTH_SECRET,
+  secret: process.env.NUXT_AUTH_ORIGIN,
   pages: {
     signIn: "/sign-in",
   },
