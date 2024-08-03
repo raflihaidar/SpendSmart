@@ -561,17 +561,25 @@ export const searchTransactions = async (
   // Mendapatkan data yang akan diskip
   const offset = (pageNumber - 1) * pageSize;
 
-  // Assign dua variable menggunakan Promise.all secara paralel (bersamaan) karena tidak saling mempengaruhi
-  const [transactions, totalTransactions] = await Promise.all([
-    prisma.transaction.findMany({
-      skip: offset,
-      take: pageSize,
+  // Menghitung total transaksi yang sesuai dengan filter
+  const [totalFilteredTransactions, paginatedTransactions] = await Promise.all([
+    prisma.transaction.count({
       where: {
-        description: {
-          search: `${target}*`,
-        },
         user_id: userId,
+        description: {
+          contains: target, // Filter berdasarkan target di deskripsi
+        },
       },
+    }),
+    prisma.transaction.findMany({
+      where: {
+        user_id: userId,
+        description: {
+          contains: target, // Filter berdasarkan target di deskripsi
+        },
+      },
+      skip: offset, // Skip data sesuai dengan pagination
+      take: pageSize, // Ambil data sesuai dengan ukuran halaman
       include: {
         category: {
           select: {
@@ -583,29 +591,22 @@ export const searchTransactions = async (
         createdAt: "desc",
       },
     }),
-    prisma.transaction.count({
-      where: {
-        user_id: userId,
-      },
-    }),
   ]);
 
-  const totalPages = Math.ceil(totalTransactions / pageSize);
-
-  if (!transactions) return null;
+  // Hitung total halaman berdasarkan hasil filter
+  const totalPages = Math.ceil(totalFilteredTransactions / pageSize);
 
   // Manipulasi createdAt menjadi format yang lebih mudah dibaca
-  const newFormatTransactions: FormattedTransaction[] = transactions.map(
-    (transaction) => ({
+  const formattedTransactions: FormattedTransaction[] =
+    paginatedTransactions.map((transaction) => ({
       ...transaction,
       createdAt: new Date(transaction.createdAt).toLocaleDateString("id-ID"),
-    })
-  );
+    }));
 
   return {
-    transactions: newFormatTransactions,
+    transactions: formattedTransactions,
     totalPages,
     currentPages: pageNumber,
-    totalResult: totalTransactions,
+    totalResult: totalFilteredTransactions,
   };
 };
