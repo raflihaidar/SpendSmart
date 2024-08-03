@@ -13,11 +13,13 @@
     "vue": "latest"
   },
   "dependencies": {
+    "@elastic/elasticsearch": "^8.14.0",
     "@next-auth/prisma-adapter": "^1.0.7",
     "@nuxt/icon": "^1.0.0",
     "@nuxtjs/auth-next": "5.0.0-1667386184.dfbbb54",
     "@nuxtjs/i18n": "^8.3.1",
     "@pinia/nuxt": "^0.5.1",
+    "@prisma-fts/elasticsearch": "^1.0.1",
     "@prisma/client": "^5.16.1",
     "@sidebase/nuxt-auth": "^0.7.2",
     "@tidbcloud/prisma-adapter": "^5.15.0",
