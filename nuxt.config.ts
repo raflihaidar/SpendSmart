@@ -3,6 +3,7 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   modules: [
     "@nuxtjs/device",
+    "@nuxt/eslint",
     [
       "@pinia/nuxt",
       {
@@ -23,7 +24,7 @@ export default defineNuxtConfig({
   },
   css: ["~/assets/css/main.css"],
   runtimeConfig: {
-    authSecret: process.env.AUTH_SECRET,
+    authSecret: process.env.NUXT_AUTH_SECRET,
     googleId: process.env.GOOGLE_CLIENT_ID,
     googleSecret: process.env.GOOGLE_SECRET_ID,
   },
