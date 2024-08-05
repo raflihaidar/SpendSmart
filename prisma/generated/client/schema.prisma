@@ -1,0 +1,97 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["relationJoins", "fullTextSearch", "fullTextIndex", "driverAdapters"]
+  output          = "./generated/client"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                  String           @id @default(uuid())
+  fullname            String           @unique @db.VarChar(100)
+  username            String           @unique @db.VarChar(20)
+  password            String           @db.VarChar(100)
+  email               String           @unique @db.VarChar(100)
+  financial_record_id String           @unique
+  account             account?
+  transaction         Transaction[]
+  category            Category[]
+  financial_record    Financial_Record @relation(fields: [financial_record_id], references: [id])
+
+  @@map("users")
+}
+
+model Financial_Record {
+  id        String   @id @default(uuid())
+  income    Int
+  expense   Int
+  balance   Int
+  updatedAt DateTime @default(now())
+  user      User?
+
+  @@map("financial_records")
+}
+
+model Transaction {
+  id          String   @id @default(uuid())
+  description String   @db.VarChar(100)
+  amount      Int
+  createdAt   DateTime @db.Date
+  type_id     Int
+  user_id     String   @db.VarChar(255)
+  category_id Int
+  category    Category @relation(fields: [category_id], references: [id])
+  type        Type     @relation(fields: [type_id], references: [id])
+  user        User     @relation(fields: [user_id], references: [id])
+
+  @@index([type_id], map: "transactions_type_id_fkey")
+  @@index([category_id], map: "transactions_category_id_fkey")
+  @@index([user_id], map: "transactions_user_id_fkey")
+  @@fulltext([description])
+  @@map("transactions")
+}
+
+model Type {
+  id          Int           @id @default(autoincrement())
+  name        String        @db.VarChar(20)
+  Category    Category[]
+  Transaction Transaction[]
+
+  @@map("types")
+}
+
+model Category {
+  id          Int           @id @default(autoincrement())
+  name        String        @db.VarChar(20)
+  type_id     Int
+  user_id     String
+  type        Type          @relation(fields: [type_id], references: [id])
+  user        User          @relation(fields: [user_id], references: [id])
+  transaction Transaction[]
+
+  @@index([type_id], map: "categories_type_id_fkey")
+  @@map("categories")
+}
+
+model account {
+  id                Int      @id @default(autoincrement())
+  userId            String   @unique(map: "Account_userId_key")
+  providerAccountId String
+  createdAt         DateTime @default(now()) @db.DateTime(0)
+  updatedAt         DateTime @default(now()) @db.DateTime(0)
+  access_token      String?  @db.Text
+  expires_at        Int?
+  id_token          String?  @db.Text
+  provider          String
+  refresh_token     String?  @db.Text
+  scope             String?
+  session_state     String?
+  token_type        String?
+  type              String
+  users             User     @relation(fields: [userId], references: [id], onDelete: Cascade, map: "Account_userId_fkey")
+
+  @@unique([provider, providerAccountId], map: "Account_provider_providerAccountId_key")
+}
