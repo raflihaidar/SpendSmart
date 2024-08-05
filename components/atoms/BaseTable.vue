@@ -1,12 +1,7 @@
 <script setup lang="ts">
-import { defineProps } from "vue";
-
-defineProps({
-  headerNames: {
-    type: Array,
-    required: false,
-  },
-});
+defineProps<{
+  headerNames: Array<string> | null;
+}>();
 </script>
 
 <template>
@@ -22,10 +17,10 @@ defineProps({
                 </tr>
                 <tr v-if="!$slots.tableHeader">
                   <th
-                    scope="col"
-                    class="px-6 py-4"
                     v-for="(item, index) in headerNames"
                     :key="index"
+                    scope="col"
+                    class="px-6 py-4"
                   >
                     {{ item }}
                   </th>

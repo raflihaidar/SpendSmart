@@ -2,18 +2,16 @@
 const email = ref("");
 const password = ref("");
 const isLoading = ref(false);
-import { useAuthStore } from "~/stores/auth.store";
 
 const store = useAuthStore();
 
-const { user } = storeToRefs(store);
 const { signIn, getSession } = useAuth();
-let error = ref<string>("");
+const error = ref<string>("");
 
 const handleSignIn = async () => {
   try {
     isLoading.value = true;
-    let result = await signIn("credentials", {
+    const result = await signIn("credentials", {
       password: password.value,
       email: email.value,
       redirect: false,
@@ -36,7 +34,7 @@ const handleSignIn = async () => {
 const socialAction = async (action: string) => {
   try {
     isLoading.value = true;
-    let result = await signIn(action, { redirect: true });
+    const result = await signIn(action, { redirect: true });
 
     if (result?.ok && !result.error) {
       await navigateTo("/");
@@ -60,17 +58,17 @@ const socialAction = async (action: string) => {
     <h3 class="text-sm">Select method to log in</h3>
     <div class="flex justify-center gap-x-5 mt-10">
       <BaseSocialButton
-        @click="socialAction('google')"
         name="google"
-        sizeIcon="1.5rem"
+        size-icon="1.5rem"
         class="flex-grow"
-        nameIcon="Google"
+        name-icon="Google"
+        @click="socialAction('google')"
       />
       <BaseSocialButton
         name="facebook"
-        sizeIcon="1.5rem"
+        size-icon="1.5rem"
         class="flex-grow"
-        nameIcon="Facebook"
+        name-icon="Facebook"
       />
     </div>
     <BaseSeperator text="Or continue with email" />
@@ -79,19 +77,19 @@ const socialAction = async (action: string) => {
       <section class="grid gap-y-1">
         <BaseLabel name="email" />
         <BaseInput
-          v-model="email"
-          inputType="email"
-          placeHolder="Your Email Address"
           id="email"
+          v-model="email"
+          input-type="email"
+          place-holder="Your Email Address"
         />
       </section>
       <section class="grid gap-y-1">
         <BaseLabel name="password" />
         <BaseInput
-          v-model="password"
-          inputType="password"
-          placeHolder="Your Password"
           id="password"
+          v-model="password"
+          input-type="password"
+          place-holder="Your Password"
         />
       </section>
       <section class="flex gap-x-2">
@@ -100,10 +98,10 @@ const socialAction = async (action: string) => {
       </section>
       <section class="grid gap-y-1">
         <BaseButton
-          eventType="signin"
-          bgColor="bg-color1"
-          textColor="text-white"
-          borderColor="border-border"
+          event-type="button"
+          bg-color="bg-color1"
+          text-color="text-white"
+          border-color="border-border"
           :title="!isLoading ? 'sign in' : ''"
           @signin="handleSignIn"
         />

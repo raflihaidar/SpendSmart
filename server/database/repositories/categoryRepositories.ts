@@ -1,5 +1,5 @@
-import { Category } from "@prisma/client";
-import { ICategory } from "~/types/ICategory";
+import type { Category } from "@prisma/client";
+import type { ICategory } from "~/types/ICategory";
 import { prisma } from "~/server/database/client";
 
 export const createCategory = async (

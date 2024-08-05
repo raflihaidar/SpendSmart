@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { RESPONSE_CODE } from "~/server/app/common/code";
-import { H3Event } from "h3";
+import type { H3Event } from "h3";
 
 // @ts-ignore
 import bcrypt from "bcrypt";

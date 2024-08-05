@@ -1,12 +1,3 @@
-<template>
-  <div>
-    <section class="w-[80%] mx-auto py-5">
-      <SidebarHeader :icon="'ic:baseline-savings'" title="spendSmart" />
-      <MenuList :menus="menuList" />
-    </section>
-  </div>
-</template>
-
 <script setup lang="ts">
 const menuList = reactive([
   {
@@ -23,3 +14,12 @@ const menuList = reactive([
   },
 ]);
 </script>
+
+<template>
+  <div>
+    <section class="w-[80%] mx-auto py-5">
+      <SidebarHeader :icon="'ic:baseline-savings'" title="spendSmart" />
+      <MenuList :menus="menuList" />
+    </section>
+  </div>
+</template>

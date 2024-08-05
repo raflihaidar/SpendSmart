@@ -1,3 +1,10 @@
+<script setup lang="ts">
+defineProps<{
+  icon: string;
+  title: string;
+}>();
+</script>
+
 <template>
   <div
     class="flex items-center justify-start gap-x-3 border-b-[#E0E1E2] border-b cursor-pointer pb-5"
@@ -6,18 +13,3 @@
     <h1 class="text-md font-bold">{{ title }}</h1>
   </div>
 </template>
-
-<script setup lang="ts">
-import { defineProps } from "vue";
-
-defineProps({
-  icon: {
-    type: String,
-    required: true,
-  },
-  title: {
-    type: String,
-    required: true,
-  },
-});
-</script>

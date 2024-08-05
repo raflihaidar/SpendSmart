@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import Swal from "sweetalert2";
-import { useTransactionStore } from "~/stores/transaction.store";
-import { type TransactionInput } from "~/types/ITransction";
-import { type TransactionState } from "~/types/ITransction";
+import {
+  type TransactionInput,
+  type TransactionState,
+} from "~/types/ITransction";
 
 definePageMeta({
   name: "transactions",
+  middleware: "auth",
 });
 
 const currentPage = ref(0);
@@ -32,7 +34,7 @@ const closeModal = async () => {
 };
 
 const fetchTransactionsData = async (pageNumber: number = 1) => {
-  let data = await transactionStore.getTransaction(pageNumber);
+  const data = await transactionStore.getTransaction(pageNumber);
 
   if (data) {
     currentPage.value = data.currentPages;
@@ -167,7 +169,7 @@ const handleEdit = async () => {
             icon: "success",
           });
           transactionStore.getTransaction();
-        } catch (error: Error) {
+        } catch (error: any) {
           swalWithBootstrapButtons.fire({
             title: "error",
             text: error.statusMessage,
@@ -202,7 +204,7 @@ watch(
     if (newValue == "") {
       await fetchTransactionsData();
     } else {
-      let data: any = await transactionStore.searchTransaction(
+      const data: any = await transactionStore.searchTransaction(
         searchQuery.value,
         currentPage.value
       );
@@ -252,12 +254,12 @@ watch(
       <div class="flex w-auto gap-x-3">
         <BaseButton
           title="Delete"
-          @delete="handleMultipleDelete"
-          eventType="delete"
+          event-type="button"
           width="max-w-28"
-          bgColor="bg-[#E60D0D]"
-          textColor="text-white"
+          bg-color="bg-[#E60D0D]"
+          text-color="text-white"
           icon="ic:baseline-delete"
+          @handler="handleMultipleDelete"
         />
         <!-- <BaseButton
           eventType="export"
@@ -268,12 +270,12 @@ watch(
         /> -->
         <NuxtLink to="/transactions/add">
           <BaseButton
-            eventType=""
+            event-type="button"
             title="Add"
             width="max-w-28"
-            bgColor="bg-color1"
-            textColor="text-white"
-            borderColor="border-color3"
+            bg-color="bg-color1"
+            text-color="text-white"
+            border-color="border-color3"
             icon="ic:baseline-add"
           />
         </NuxtLink>
@@ -281,7 +283,7 @@ watch(
     </section>
     <p class="font-bold text-md mt-10">All Transactions</p>
     <section v-if="transactions.length > 0 && transactions">
-      <BaseTable :headerNames="headerNames">
+      <BaseTable :header-names="headerNames">
         <template #tableBody>
           <tr
             v-for="(item, index) in transactions"
@@ -309,34 +311,34 @@ watch(
             </td>
             <td class="whitespace-nowrap px-6 py-4">
               <input
-                type="checkbox"
                 :id="item.id"
-                :value="item"
                 v-model="selectedItem"
-              />
+                type="checkbox"
+                :value="item"
+              >
             </td>
           </tr>
         </template>
       </BaseTable>
       <BasePagination
         v-model="currentPage"
-        :totalPages="totalPages"
-        :totalResult="totalResult"
+        :total-pages="totalPages"
+        :total-result="totalResult"
         @fetch-data="transactionStore.getTransaction"
       />
     </section>
-    <section class="text-center" v-else>
+    <section v-else class="text-center">
       <img
         src="../../assets/images/55024593_9264820.svg"
         alt="No Data"
         class="w-96 mx-auto"
-      />
+      >
       <p class="font-bold text-lg">You don't have any transactions yet.</p>
       <p class="text-sm">
         Remember to always review and record every transaction you make.
       </p>
     </section>
-    <TheModal :isOpen="isOpenModal" @closeModal="closeModal">
+    <TheModal :is-open="isOpenModal" @close-modal="closeModal">
       <template #modal-header>
         <div class="text-xl font-semibold mb-5">
           <p>Edit Transaction</p>
@@ -347,11 +349,21 @@ watch(
           <template #form-content>
             <section>
               <BaseLabel name="Description" />
-              <BaseInput inputType="text" v-model="modalContent.description" />
+              <BaseInput
+                id="Description"
+                v-model="modalContent.description"
+                input-type="text"
+                place-holder="Add new description"
+              />
             </section>
             <section>
               <BaseLabel name="Amount" />
-              <BaseInput inputType="number" v-model="modalContent.amount" />
+              <BaseInput
+                id="Amount"
+                v-model="modalContent.amount"
+                input-type="number"
+                place-holder="Add new amount"
+              />
             </section>
             <section>
               <span>
@@ -366,22 +378,22 @@ watch(
               <span class="w-1/2">
                 <BaseLabel name="Categories" />
                 <BaseDropDown
-                  :datas="categories"
                   v-model="modalContent.category_id"
+                  :datas="categories"
                   width="w-full"
                   border="border"
-                  borderColor="border-color3"
+                  border-color="border-color3"
                   class="px-3 py-2"
                 />
               </span>
               <span class="w-1/2">
                 <BaseLabel name="Type" />
                 <BaseDropDown
-                  :datas="type"
                   v-model="modalContent.type_id"
+                  :datas="type"
                   width="w-full"
                   border="border"
-                  borderColor="border-color3"
+                  border-color="border-color3"
                   class="px-3 py-2"
                 />
               </span>
@@ -389,19 +401,19 @@ watch(
             <section class="flex w-[100%] place-content-end gap-x-2">
               <BaseButton
                 title="Cancel"
-                eventType="closeModal"
-                @closeModal="closeModal"
-                bgColor="bg-red-500"
+                event-type="button"
+                bg-color="bg-red-500"
                 width="w-28"
-                textColor="text-white"
+                text-color="text-white"
+                @handler="closeModal"
               />
               <BaseButton
-                eventType="edit"
-                @edit="handleEdit"
+                event-type="button"
                 title="Update"
-                bgColor="bg-color1"
+                bg-color="bg-color1"
                 width="w-28"
-                textColor="text-white"
+                text-color="text-white"
+                @handler="handleEdit"
               />
             </section>
           </template>

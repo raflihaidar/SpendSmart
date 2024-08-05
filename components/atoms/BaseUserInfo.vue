@@ -1,12 +1,6 @@
 <script setup lang="ts">
-import { useAuthStore } from "#imports";
-
 const authStore = useAuthStore();
 const { user } = storeToRefs(authStore);
-
-watchEffect(() => {
-  console.log("user from navbar", user.value);
-});
 </script>
 
 <template>

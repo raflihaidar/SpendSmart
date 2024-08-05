@@ -1,16 +1,15 @@
 <script setup lang="ts">
-import { defineProps } from "vue";
-defineProps({
-  name: {
-    type: String,
-    required: true,
-  },
-  sizeIcon: {
-    type: String,
-    default: "1rem",
-  },
-  nameIcon: String,
-});
+withDefaults(
+  defineProps<{
+    name: string;
+    sizeIcon?: string;
+    nameIcon?: string;
+  }>(),
+  {
+    sizeIcon: "1rem",
+    nameIcon: "",
+  }
+);
 </script>
 
 <template>

@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { defineProps } from "vue";
 interface Props {
   title: string;
   value: string;
@@ -7,7 +6,7 @@ interface Props {
   type: string;
 }
 
-const props = defineProps<Props>();
+defineProps<Props>();
 </script>
 
 <template>
@@ -22,6 +21,7 @@ const props = defineProps<Props>();
         {{ title }}
       </p>
       <p
+        v-if="!$slots.optional"
         class="font-bold"
         :class="
           type == 'income'
@@ -30,12 +30,11 @@ const props = defineProps<Props>();
             ? 'text-red-500'
             : 'text-black'
         "
-        v-if="!$slots.optional"
       >
         {{ value }}
         <!-- <span class="text-green-500 text-sm ml-2">+15%</span> -->
       </p>
-      <slot name="optional"></slot>
+      <slot name="optional" />
     </section>
     <section>
       <div class="bg-color1 text-white pt-2 px-2 rounded-xl shadow-sm">

@@ -1,16 +1,12 @@
-<script lang="ts" setup>
-import { defineProps } from "vue";
-
+<script setup lang="ts">
 interface SeriesItem {
   name: string;
   data: number[];
 }
-const props = defineProps({
-  data: {
-    type: Array as PropType<SeriesItem[]>,
-    required: true,
-  },
-});
+
+const props = defineProps<{
+  data: SeriesItem[];
+}>();
 
 const { data } = props;
 const series = ref<SeriesItem[]>([]);
@@ -66,11 +62,6 @@ onMounted(updateChart);
 
 <template>
   <ClientOnly>
-    <apexchart
-      type="area"
-      height="350"
-      :options="options"
-      :series="series"
-    ></apexchart>
+    <apexchart type="area" height="350" :options="options" :series="series" />
   </ClientOnly>
 </template>

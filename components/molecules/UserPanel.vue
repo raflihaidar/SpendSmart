@@ -11,6 +11,6 @@ const handleClick = () => {
     <BaseUserInfo />
     <BaseSettings />
     <BaseNotificationIcon @click="handleClick" />
-    <TheNotificationModal :isActive="notifModal" />
+    <TheNotificationModal :is-active="notifModal" />
   </div>
 </template>

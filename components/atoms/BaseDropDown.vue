@@ -1,17 +1,24 @@
 <script setup lang="ts">
-import { defineProps, defineEmits, toRefs, ref, watch } from "vue";
-
-const props = defineProps<{
-  datas: Array<{ id: number; name: string }>;
-  width?: string;
-  border?: string;
-  borderColor?: string;
-  modelValue: number | null;
-  enableEdit?: {
-    type: boolean;
-    default: false;
-  };
-}>();
+interface data {
+  id: number;
+  name: string;
+}
+const props = withDefaults(
+  defineProps<{
+    datas: Array<data>;
+    width?: string;
+    border?: string;
+    borderColor?: string;
+    modelValue: number | null;
+    enableEdit?: boolean;
+  }>(),
+  {
+    width: "w-full",
+    border: "border-none",
+    borderColor: "border-none",
+    enableEdit: false,
+  }
+);
 
 const emit = defineEmits(["update:modelValue", "edit", "delete"]);
 
@@ -46,10 +53,10 @@ const openOption = () => {
 // Watch for changes in datas and update currentValue and modelValue accordingly
 watch(
   () => datas.value,
-  (newDatas: any) => {
+  (newDatas: Array<data>) => {
     if (newDatas.length > 0) {
       const selectedValue = newDatas.find(
-        (data: any) => data.id === modelValue.value
+        (data: data) => data.id === modelValue.value
       );
       if (selectedValue) {
         currentValue.value = selectedValue.name;
@@ -69,9 +76,8 @@ watch(
 // Watch for changes in modelValue and update currentValue accordingly
 watch(
   () => modelValue.value,
-  (newValue: any) => {
-    console.log("new model value : ", modelValue.value);
-    const value = datas.value.find((data: any) => data.id === newValue);
+  (newValue: number | null) => {
+    const value = datas.value.find((data: data) => data.id === newValue);
     if (value) {
       currentValue.value = value.name;
     } else {
@@ -94,8 +100,8 @@ watch(
     ]"
   >
     <button
-      @click="openOption"
       class="cursor-pointer w-full text-left flex justify-between items-center"
+      @click="openOption"
     >
       {{ currentValue }}
       <Icon name="ic:round-keyboard-arrow-down" size="1.5rem" />
@@ -112,22 +118,22 @@ watch(
       >
         <p
           v-if="editingItemId !== item.id"
-          @click="handleChange(item.name, item.id)"
           class="w-full block"
+          @click="handleChange(item.name, item.id)"
         >
           {{ item.name }}
         </p>
 
         <span v-else class="flex gap-x-3 items-center w-[90%]">
           <input
-            class="w-full bg-inherit outline-none border border-color3 px-2 py-1 rounded-md"
             v-model="item.name"
-          />
+            class="w-full bg-inherit outline-none border border-color3 px-2 py-1 rounded-md"
+          >
           <Icon
             name="ic:baseline-delete"
             size="1.5rem"
             class="bg-red-500 cursor-pointer"
-            @click="handleDelete(item.id, index)"
+            @click="handleDelete(item.id)"
           />
         </span>
         <Icon
@@ -138,7 +144,7 @@ watch(
           @click="handleEdit(item.id, item.name)"
         />
       </li>
-      <slot name="tools"> </slot>
+      <slot name="tools" />
     </ul>
   </div>
 </template>
