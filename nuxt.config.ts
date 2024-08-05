@@ -29,7 +29,9 @@ export default defineNuxtConfig({
     googleSecret: process.env.GOOGLE_SECRET_ID,
   },
   auth: {
-    baseURL: process.env.NUXT_AUTH_ORIGIN,
+    baseURL: process.env.VERCEL_URL
+      ? `https://${process.env.VERCEL_URL}/api/auth`
+      : undefined,
     provider: {
       type: "authjs",
     },
