@@ -1,5 +1,5 @@
 import { prisma } from "../client";
-import { Financial_Record } from "@prisma/client";
+import type { Financial_Record } from "@prisma/client";
 
 export const getFinanceById = async (
   id: string | undefined

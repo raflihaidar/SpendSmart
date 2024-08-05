@@ -188,7 +188,7 @@ export const useTransactionStore = defineStore("transaction", () => {
     }
   };
 
-  const editCategory = async (id: number, name: String) => {
+  const editCategory = async (id: number, name: string) => {
     try {
       const res = await $fetch(`/api/category/${id}`, {
         method: "PATCH",
@@ -220,7 +220,7 @@ export const useTransactionStore = defineStore("transaction", () => {
         return null;
       }
 
-      let result = transactions.value.filter((tx) => tx.id != id);
+      const result = transactions.value.filter((tx) => tx.id != id);
       transactions.value = result;
 
       return "Success";

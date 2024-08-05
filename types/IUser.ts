@@ -3,7 +3,7 @@ export interface IUser {
   fullname: string;
   username: string;
   password: string;
-  email: String;
+  email: string;
   financial_record_id: string;
 }
 

@@ -59,23 +59,23 @@ onMounted(async () => {
           <section class="flex justify-between items-center">
             <ul class="text-xs font-bold mt-2 flex justify-start gap-x-5">
               <li
-                @click="handleTab(item)"
+                v-for="(item, index) in dataList"
+                :key="index"
                 :class="[
                   item == currentTab ? 'text-green-custom' : 'text-green-300',
                   'cursor-pointer',
                 ]"
-                v-for="(item, index) in dataList"
-                :key="index"
+                @click="handleTab(item)"
               >
                 {{ item }}
               </li>
             </ul>
-            <BaseButton
-              bgColor="bg-color1"
-              textColor="text-white"
+            <!-- <BaseButton
+              bg-color="bg-color1"
+              text-color="text-white"
               title="View Report"
               width="max-w-28"
-            />
+            /> -->
           </section>
           <BaseLineChart :data="seriesData" />
         </template>
@@ -88,9 +88,9 @@ onMounted(async () => {
             <div v-if="latestTransaction.transactionsToday.length > 0">
               <p class="text-color3 text-sm font-semibold">Today</p>
               <div
-                class="grid grid-cols-3 my-3 text-sm"
                 v-for="(item, index) in latestTransaction.transactionsToday"
                 :key="index"
+                class="grid grid-cols-3 my-3 text-sm"
               >
                 <p>{{ item.description }}</p>
                 <span
@@ -122,9 +122,9 @@ onMounted(async () => {
             >
               <p class="text-color3 text-sm font-semibold">Yesterday</p>
               <div
-                class="grid grid-cols-3 my-3 text-sm"
                 v-for="(item, index) in latestTransaction.transactionsYesterday"
                 :key="index"
+                class="grid grid-cols-3 my-3 text-sm"
               >
                 <p>{{ item.description }}</p>
                 <span
@@ -150,8 +150,8 @@ onMounted(async () => {
             </div>
           </div>
           <div
-            class="text-xl text-center font-bold top-[40%] relative text-red-500"
             v-else
+            class="text-xl text-center font-bold top-[40%] relative text-red-500"
           >
             <p>No Transactions HIstory</p>
           </div>

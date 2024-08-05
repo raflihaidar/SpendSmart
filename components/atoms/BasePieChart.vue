@@ -1,6 +1,4 @@
-<script lang="ts" setup>
-import { defineProps, ref, toRefs, watch, onMounted } from "vue";
-
+<script setup lang="ts">
 // Mendefinisikan tipe untuk props
 const props = defineProps<{
   label: string[];
@@ -126,7 +124,7 @@ watch(
         type="donut"
         :options="label.length <= 0 ? nullOptions : options"
         :series="data"
-      ></apexchart>
+      />
     </ClientOnly>
   </div>
 </template>

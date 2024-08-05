@@ -1,20 +1,9 @@
 <script setup lang="ts">
-import { defineProps, defineEmits } from "vue";
-
-const props = defineProps({
-  totalPages: {
-    type: Number,
-    required: true,
-  },
-  modelValue: {
-    type: Number,
-    required: true,
-  },
-  totalResult: {
-    type: Number,
-    required: true,
-  },
-});
+const props = defineProps<{
+  totalPages: number;
+  modelValue: number;
+  totalResult: number;
+}>();
 
 const { totalPages, modelValue, totalResult } = toRefs(props);
 
@@ -37,7 +26,7 @@ const prev = () => {
   }
 };
 
-watch(modelValue, (newValue: any) => {
+watch(modelValue, (newValue: number) => {
   fetchData(newValue);
 });
 </script>
@@ -81,8 +70,8 @@ watch(modelValue, (newValue: any) => {
         >
           <a
             href="#"
-            @click="prev"
             class="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
+            @click="prev"
           >
             <span class="sr-only">Previous</span>
             <Icon name="ic:baseline-arrow-back-ios" />
@@ -97,7 +86,6 @@ watch(modelValue, (newValue: any) => {
           <a
             v-for="(item, index) in totalPages"
             :key="index"
-            @click="fetchData(item)"
             href="#"
             :class="[
               modelValue == item
@@ -105,12 +93,13 @@ watch(modelValue, (newValue: any) => {
                 : 'bg-white text-black hover:bg-gray-50 focus:z-20 focus:outline-offset-0',
               'relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 ',
             ]"
+            @click="fetchData(item)"
             >{{ item }}</a
           >
           <a
             href="#"
-            @click="next"
             class="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
+            @click="next"
           >
             <span class="sr-only">Next</span>
             <Icon name="ic:baseline-arrow-forward-ios" />

@@ -2,7 +2,6 @@
 definePageMeta({
   name: "add",
 });
-import type { ITransaction, TransactionState } from "~/types/ITransction";
 
 const store = useTransactionStore();
 const router = useRouter();
@@ -76,50 +75,50 @@ watch(
       <section class="flex items-center gap-x-2 w-[30%] place-content-end">
         <!-- <BaseButton icon="ic:outline-remove-red-eye" title="" /> -->
         <BaseButton
-          eventType="add"
-          @add="sendData(payload)"
+          event-type="button"
           title="Save and Continue"
-          bgColor="bg-color1"
-          textColor="text-white"
+          bg-color="bg-color1"
+          text-color="text-white"
           width="w-40"
+          @handler="sendData(payload)"
         />
       </section>
     </nav>
 
     <main class="w-full mt-5 grid gap-y-5">
       <section>
-        <BaseMessages :isError="isError.status" :message="isError.message" />
+        <BaseMessages :is-error="isError.status" :message="isError.message" />
       </section>
       <div class="grid grid-cols-3 gap-x-5">
         <section class="w-full bg-white shadow-sm rounded-lg px-3 py-4">
           <p class="text-md font-bold mb-2">Type</p>
           <BaseDropDown
-            :datas="type"
             v-model="payload.type_id"
+            :datas="type"
             width="w-full"
             border="border"
-            borderColor="border-color3"
+            border-color="border-color3"
             class="text-sm px-3 py-2"
           />
         </section>
         <section class="w-full bg-white shadow-sm rounded-lg px-3 py-4">
           <p class="text-md font-bold mb-2">Category</p>
           <BaseDropDown
-            :datas="categories"
             v-model="payload.category_id"
-            @edit="store.editCategory"
-            @delete="store.deleteCategory"
+            :datas="categories"
             width="w-full"
             border="border"
-            borderColor="border-color3"
-            :enableEdit="true"
+            border-color="border-color3"
+            :enable-edit="true"
             class="text-sm px-3 py-2"
+            @edit="store.editCategory"
+            @delete="store.deleteCategory"
           >
             <template #tools>
               <div
                 v-if="!inputDropDown"
-                @click="inputDropDown = true"
                 class="flex items-center px-3 py-2 gap-x-2 cursor-pointer hover:bg-gray-100 hover:underline transition-colors"
+                @click="inputDropDown = true"
               >
                 <Icon name="ic:round-add-box" size="1.5rem" />
                 <p>Add new category</p>
@@ -129,22 +128,22 @@ watch(
                 class="flex justify-between items-center px-3 py-3 gap-x-5"
               >
                 <BaseInput
-                  inputType="text"
                   id="Description"
-                  placeHolder="Add new category"
                   v-model="payloadCategory.name"
+                  input-type="text"
+                  place-holder="Add new category"
                 />
                 <Icon
                   name="ic:baseline-cancel"
                   size="2rem"
-                  @click="inputDropDown = false"
                   class="bg-red-500 cursor-pointer"
+                  @click="inputDropDown = false"
                 />
                 <Icon
                   name="ic:baseline-save"
                   size="2rem"
-                  @click="addNewCategory"
                   class="bg-color1 cursor-pointer"
+                  @click="addNewCategory"
                 />
               </div>
             </template>
@@ -154,8 +153,8 @@ watch(
           <p class="text-md font-bold mb-2">Date</p>
           <BaseDatePicker
             ref="datePicker"
-            width="w-full"
             v-model="payload.createdAt"
+            width="w-full"
             class="text-sm px-3 py-2"
           />
         </section>
@@ -166,19 +165,19 @@ watch(
         <section class="mt-5">
           <BaseLabel name="Description" />
           <BaseInput
-            inputType="text"
             id="Description"
-            placeHolder="Input Description Transaction"
             v-model="payload.description"
+            input-type="text"
+            place-holder="Input Description Transaction"
           />
         </section>
         <section class="mt-5">
           <BaseLabel name="Amount" />
           <BaseInput
-            inputType="number"
             id="Amount"
-            placeHolder="Input Transaction Value"
             v-model="payload.amount"
+            input-type="number"
+            place-holder="Input Transaction Value"
           />
         </section>
         <!-- <section class="flex justify-between items-center mt-5">

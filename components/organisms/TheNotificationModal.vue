@@ -1,11 +1,7 @@
 <script setup lang="ts">
-import { defineProps } from "vue";
-defineProps({
-  isActive: {
-    type: Boolean,
-    required: true,
-  },
-});
+defineProps<{
+  isActive: boolean;
+}>();
 </script>
 
 <template>
@@ -28,6 +24,6 @@ defineProps({
       </div> -->
       <div class="text-center text-xl font-bold py-10">No Notification</div>
     </div>
-    <div class="border-t border-color3 h-10"></div>
+    <div class="border-t border-color3 h-10" />
   </div>
 </template>

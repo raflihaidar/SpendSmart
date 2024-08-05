@@ -1,63 +1,40 @@
 <script setup lang="ts">
-import { defineProps, defineEmits } from "vue";
-const props = defineProps({
-  title: String,
-  icon: String,
-  sizeIcon: {
-    type: String,
-    default: "1.2rem",
-  },
-  width: {
-    type: String,
-    default: "w-full",
-  },
-  bgColor: {
-    type: String,
-    default: "bg-white",
-  },
-  textColor: {
-    type: String,
-    default: "text-black",
-  },
-  borderColor: {
-    type: String,
-    default: "border-none",
-  },
-  eventType: {
-    type: String,
-    required: true,
-    validator(value: any, props: any) {
-      return [
-        "signin",
-        "signup",
-        "signout",
-        "filter",
-        "add",
-        "delete",
-      ].includes(value);
-    },
-  },
+interface buttonProps {
+  title?: string;
+  icon?: string;
+  sizeIcon?: string;
+  width?: string;
+  bgColor?: string;
+  textColor?: string;
+  borderColor?: string;
+  eventType: "button" | "submit" | "reset" | undefined;
+}
+
+withDefaults(defineProps<buttonProps>(), {
+  sizeIcon: "1.2rem",
+  width: "w-full",
+  bgColor: "bg-white",
+  textColor: "text-black",
+  borderColor: "border-none",
+  title: "",
+  icon: "",
 });
 
 const emits = defineEmits<{
-  (e: "signin"): void;
-  (e: "signup"): void;
-  (e: "signout"): void;
-  (e: "add", payload: any): void;
-  (e: "delete", payload: any): void;
+  (e: "handler"): void;
 }>();
 
 const handleClick = () => {
-  emits(props.eventType);
+  emits("handler");
 };
 </script>
 
 <template>
   <button
-    @click="handleClick"
     :class="`border ${borderColor} rounded-xl ${bgColor} flex items-center justify-center gap-x-1 p-3 font-semibold ${textColor} ${width} ${
       !$slots.icon ? 'block' : 'flex items-center '
     }`"
+    @click="handleClick"
   >
     <slot name="icon" />
     <Icon v-if="icon" :name="icon" :size="sizeIcon" />
