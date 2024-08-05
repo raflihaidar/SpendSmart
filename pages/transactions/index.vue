@@ -7,7 +7,7 @@ import {
 
 definePageMeta({
   name: "transactions",
-  middleware: "auth",
+  // middleware: "auth",
 });
 
 const currentPage = ref(0);
@@ -315,7 +315,7 @@ watch(
                 v-model="selectedItem"
                 type="checkbox"
                 :value="item"
-              >
+              />
             </td>
           </tr>
         </template>
@@ -332,7 +332,7 @@ watch(
         src="../../assets/images/55024593_9264820.svg"
         alt="No Data"
         class="w-96 mx-auto"
-      >
+      />
       <p class="font-bold text-lg">You don't have any transactions yet.</p>
       <p class="text-sm">
         Remember to always review and record every transaction you make.

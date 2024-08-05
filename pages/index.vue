@@ -5,7 +5,7 @@ interface latestTransactionType {
 }
 definePageMeta({
   name: "dashboard",
-  middleware: "auth",
+  // middleware: "auth",
 });
 
 const transactionStore = useTransactionStore();
