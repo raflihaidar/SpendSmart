@@ -7,7 +7,7 @@ import {
 
 definePageMeta({
   name: "transactions",
-  // middleware: "auth",
+  middleware: "auth",
 });
 
 const currentPage = ref(0);
