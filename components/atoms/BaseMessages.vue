@@ -1,11 +1,20 @@
 <script setup lang="ts">
-withDefaults(
+const props = withDefaults(
   defineProps<{
     isError?: boolean;
     message: string | null | undefined;
   }>(),
   {
     isError: false,
+  }
+);
+
+const { isError, message } = toRefs(props);
+
+watch(
+  () => message.value,
+  (newValue: string) => {
+    console.log(newValue);
   }
 );
 </script>
