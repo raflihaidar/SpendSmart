@@ -22,10 +22,10 @@ export default defineNuxtConfig({
   },
   auth: {
     isEnabled: true,
+    baseURL: process.env.NUXT_AUTH_ORIGIN,
     // baseURL: process.env.VERCEL_URL
     //   ? `https://${process.env.VERCEL_URL}/api/auth`
     //   : undefined,
-    baseURL: `https://spend-smart-one.vercel.app/api/auth`,
     provider: {
       type: "authjs",
       trustHost: true,
