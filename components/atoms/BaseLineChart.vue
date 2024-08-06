@@ -8,7 +8,7 @@ const props = defineProps<{
   data: SeriesItem[];
 }>();
 
-const { data } = props;
+const { data } = toRefs(props);
 const series = ref<SeriesItem[]>([]);
 
 const options = ref({
@@ -34,7 +34,7 @@ const options = ref({
 const updateChart = () => {
   const months = getMonths();
   options.value.xaxis.categories = months;
-  series.value = data;
+  series.value = data.value;
   console.log("dari child : ", series.value);
 };
 

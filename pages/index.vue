@@ -9,7 +9,7 @@ definePageMeta({
 });
 
 const transactionStore = useTransactionStore();
-const { getstat, expensesCategories } = storeToRefs(transactionStore);
+const { getstat } = storeToRefs(transactionStore);
 const currentMonth = ref(months[getCurrentMount()]);
 const year = ref(getCurrentYear());
 const dataList = ref([
@@ -21,6 +21,7 @@ const dataList = ref([
 ]);
 const latestTransaction = ref<latestTransactionType | null>(null);
 const currentTab = ref("12 Months");
+const seriesData = ref<any>([]);
 
 const handleTab = (item: string) => {
   if (item != currentTab.value) {
@@ -28,12 +29,12 @@ const handleTab = (item: string) => {
   }
 };
 
-const seriesData = ref(await transactionStore.getTotalTransaction());
+// seriesData.value = await transactionStore.getTotalTransaction();
 
 onMounted(async () => {
   await transactionStore.getTransactionCurrentMonth();
-  seriesData.value = await transactionStore.getTotalTransaction();
   latestTransaction.value = await transactionStore.getLatestTransaction();
+  seriesData.value = await transactionStore.getTotalTransaction();
 });
 </script>
 
