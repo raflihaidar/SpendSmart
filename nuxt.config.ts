@@ -16,12 +16,6 @@ export default defineNuxtConfig({
     "@nuxt/icon",
     "@vee-validate/nuxt",
   ],
-  piniaPersistedstate: {
-    cookieOptions: {
-      sameSite: "strict",
-    },
-    storage: "localStorage",
-  },
   css: ["~/assets/css/main.css"],
   runtimeConfig: {
     authSecret: process.env.NUXT_AUTH_SECRET,

@@ -103,7 +103,7 @@ const socialAction = async (action: string) => {
           text-color="text-white"
           border-color="border-border"
           :title="!isLoading ? 'sign in' : ''"
-          @signin="handleSignIn"
+          @handler="handleSignIn"
         />
       </section>
     </div>
