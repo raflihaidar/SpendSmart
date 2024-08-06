@@ -22,10 +22,7 @@ export default defineNuxtConfig({
   },
   auth: {
     isEnabled: true,
-    baseURL: process.env.NUXT_AUTH_ORIGIN,
-    // baseURL: process.env.VERCEL_URL
-    //   ? `https://${process.env.VERCEL_URL}/api/auth`
-    //   : undefined,
+    baseURL: `https://${process.env.NUXT_AUTH_ORIGIN}/api/auth`,
     provider: {
       type: "authjs",
       trustHost: true,
