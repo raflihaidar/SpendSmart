@@ -3,11 +3,11 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { prisma } from "../../database/client";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { RESPONSE_CODE } from "~/server/app/common/code";
-import GoogleProvider from "next-auth/providers/google";
 import bcrypt from "bcrypt";
 
 export default NuxtAuthHandler({
   adapter: PrismaAdapter(prisma),
+  secret: useRuntimeConfig().authSecret,
   callbacks: {
     jwt: ({ token, user }: any) => {
       if (user) {
@@ -27,7 +27,6 @@ export default NuxtAuthHandler({
       return session;
     },
   },
-  secret: useRuntimeConfig().authSecret,
   pages: {
     signIn: "/sign-in",
   },
@@ -77,13 +76,7 @@ export default NuxtAuthHandler({
         return user;
       },
     }),
-    // @ts-expect-error
-    GoogleProvider.default({
-      clientId: useRuntimeConfig().googleId,
-      clientSecret: useRuntimeConfig().googleSecret,
-    }),
   ],
-  debug: process.env.NODE_ENV === "development",
   session: {
     strategy: "jwt",
     maxAge: 24 * 60 * 60,

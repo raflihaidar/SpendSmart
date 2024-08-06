@@ -19,15 +19,15 @@ export default defineNuxtConfig({
   css: ["~/assets/css/main.css"],
   runtimeConfig: {
     authSecret: process.env.NUXT_AUTH_SECRET,
-    googleId: process.env.GOOGLE_CLIENT_ID,
-    googleSecret: process.env.GOOGLE_SECRET_ID,
   },
   auth: {
+    isEnabled: true,
     baseURL: process.env.VERCEL_URL
       ? `https://${process.env.VERCEL_URL}/api/auth`
       : undefined,
     provider: {
       type: "authjs",
+      trustHost: true,
     },
   },
   imports: {
