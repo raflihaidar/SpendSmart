@@ -5,38 +5,26 @@ const { handleSubmit } = useForm({
   validationSchema: registerSchema,
 });
 
-const { value: fullname } = useField("fullname");
-const { value: username } = useField("username");
-const { value: email } = useField("email");
-const { value: password } = useField("password");
-const { value: confirm_password } = useField("confirm_password");
+const { value: name } = useField<string>("name");
+const { value: username } = useField<string>("username");
+const { value: email } = useField<string>("email");
+const { value: password } = useField<string>("password");
+const { value: confirm_password } = useField<string>("confirm_password");
 
-const isError = ref<any | null>(null);
-const isLoading = ref(false);
+const authStore = useAuthStore();
+const { isLoading, isError } = storeToRefs(authStore);
 
 const onSubmit = handleSubmit(async () => {
-  try {
-    isLoading.value = true;
-    const { error } = await useFetch("/api/auth/register", {
-      method: "post",
-      body: {
-        fullname,
-        username,
-        email,
-        password,
-        confirm_password,
-      },
-    });
+  const result = await authStore.register({
+    name: name.value,
+    username: username.value,
+    email: email.value,
+    password: password.value,
+    confirm_password: confirm_password.value,
+  });
 
-    if (error) {
-      isError.value = error.value?.statusMessage;
-      return;
-    }
-  } catch (error) {
-    throw error;
-  } finally {
-    isLoading.value = false;
-    navigateTo("/sign-in");
+  if (result) {
+    navigateTo(`/verify-email?email=${email.value}`);
   }
 });
 </script>
@@ -49,13 +37,13 @@ const onSubmit = handleSubmit(async () => {
       <BaseSocialButton name="google" size-icon="2rem" />
     </div>
     <BaseSeperator />
-    <form class="flex flex-col gap-y-5" @submit.prevent="onSubmit">
+    <div class="flex flex-col gap-y-5">
       <BaseMessages message-type="error" :message="isError" />
       <section class="grid gap-y-1">
         <BaseLabel name="name" />
         <BaseInput
-          id="fullname"
-          v-model="fullname"
+          id="name"
+          v-model="name"
           input-type="text"
           place-holder="Your full name"
         />
@@ -97,13 +85,14 @@ const onSubmit = handleSubmit(async () => {
         />
       </section>
       <BaseButton
-        event-type="submit"
+        event-type="button"
         bg-color="bg-color1"
         text-color="text-white"
         border-color="border-border"
         :title="!isLoading ? 'sign up' : ''"
+        @handler="onSubmit"
       />
-    </form>
+    </div>
     <p class="mt-5 text-center">
       Already have an account?
       <NuxtLink class="text-color1 font-bold cursor-pointer" to="/sign-in"

@@ -4,9 +4,7 @@ import { toTypedSchema } from "@vee-validate/zod";
 export const registerSchema = toTypedSchema(
   z
     .object({
-      fullname: z
-        .string()
-        .min(5, { message: "Needs to be at least 5 characters" }),
+      name: z.string().min(5, { message: "Needs to be at least 5 characters" }),
       username: z
         .string()
         .min(5, { message: "Needs to be at least 5 characters" })

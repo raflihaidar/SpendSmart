@@ -1,6 +1,6 @@
 export interface IUser {
   id?: string;
-  fullname: string;
+  name: string;
   username: string;
   password: string;
   email: string;
@@ -9,7 +9,20 @@ export interface IUser {
 
 export interface UserState {
   id: string;
-  fullname: string;
+  name: string;
   username: string;
   email: string;
 }
+
+export type ICreateUser = {
+  name: string;
+  username: string;
+  email: string;
+  password: string;
+  confirm_password: string;
+};
+
+export type ILogin = {
+  email: string;
+  password: string;
+};

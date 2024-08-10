@@ -1,9 +1,12 @@
-import { NuxtAuthHandler } from "#auth";
 import CredentialsProvider from "next-auth/providers/credentials";
+import GoogleProvider from "next-auth/providers/google";
+import { NuxtAuthHandler } from "#auth";
 import { prisma } from "../../database/client";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { RESPONSE_CODE } from "~/server/app/common/code";
-import bcrypt from "bcrypt";
+import { compare } from "bcrypt";
+
+const runtime = useRuntimeConfig();
 
 export default NuxtAuthHandler({
   adapter: PrismaAdapter(prisma),
@@ -12,7 +15,7 @@ export default NuxtAuthHandler({
     jwt: ({ token, user }: any) => {
       if (user) {
         token.id = user.id;
-        token.fullname = user.fullname;
+        token.name = user.name;
         token.username = user.username;
         token.email = user.email;
       }
@@ -21,7 +24,7 @@ export default NuxtAuthHandler({
     },
     session: ({ session, token }: { session: any; token: any }) => {
       session.user.id = token.id;
-      session.user.fullname = token.fullname;
+      session.user.name = token.name;
       session.user.username = token.username;
       session.user.email = token.email;
       return session;
@@ -31,6 +34,20 @@ export default NuxtAuthHandler({
     signIn: "/sign-in",
   },
   providers: [
+    // @ts-expect-error You need to use .default here for it to work during SSR. May be fixed via Vite at some point
+    GoogleProvider.default({
+      clientId: runtime.googleId,
+      clientSecret: runtime.googleSecret,
+      profile(profile: any) {
+        return {
+          id: profile.sub,
+          name: profile.name,
+          username: profile.given_name,
+          email: profile.email,
+          image: profile.picture,
+        };
+      },
+    }),
     // @ts-expect-error You need to use .default here for it to work during SSR. May be fixed via Vite at some point
     CredentialsProvider.default({
       name: "credentials",
@@ -61,7 +78,15 @@ export default NuxtAuthHandler({
           });
         }
 
-        const correctPassword = await bcrypt.compare(
+        if (!user.emailVerified) {
+          throw createError({
+            statusCode: RESPONSE_CODE.UNAUTHORIZED.code,
+            statusMessage:
+              "Your account has not been verified yet. Please check your email and follow the instructions to verify your account before attempting to log in.",
+          });
+        }
+
+        const correctPassword = await compare(
           credentials.password,
           user.password
         );
