@@ -7,12 +7,13 @@ export interface IUser {
   financial_record_id: string;
 }
 
-export interface UserState {
-  id: string;
-  name: string;
-  username: string;
-  email: string;
-}
+export type UserState = {
+  id?: string | null;
+  name?: string | null;
+  image?: string | null;
+  username?: string | null;
+  email?: string | null;
+};
 
 export type ICreateUser = {
   name: string;

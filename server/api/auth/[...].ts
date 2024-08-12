@@ -7,9 +7,26 @@ import { RESPONSE_CODE } from "~/server/app/common/code";
 import { compare } from "bcrypt";
 
 const runtime = useRuntimeConfig();
+const prismaAdapter = PrismaAdapter(prisma);
+
+// @ts-ignore
+prismaAdapter.createUser = (data) => {
+  return prisma.user.create({
+    data: {
+      ...data,
+      financial_record: {
+        create: {
+          income: 0,
+          expense: 0,
+          balance: 0,
+        },
+      },
+    },
+  });
+};
 
 export default NuxtAuthHandler({
-  adapter: PrismaAdapter(prisma),
+  adapter: prismaAdapter,
   secret: useRuntimeConfig().authSecret,
   callbacks: {
     jwt: ({ token, user }: any) => {
@@ -88,7 +105,7 @@ export default NuxtAuthHandler({
 
         const correctPassword = await compare(
           credentials.password,
-          user.password
+          user.password,
         );
 
         if (!correctPassword) {

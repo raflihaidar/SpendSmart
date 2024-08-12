@@ -7,14 +7,17 @@ export const useAuthStore = defineStore(
   () => {
     const isLoading: Ref<boolean> = ref(false);
     const isError: Ref<any | null> = ref(null);
-    const user = ref<UserState | null>(null);
-    const getUserData = async (payload: any): Promise<void> => {
-      user.value = payload;
-    };
+    const { data } = useAuth();
+
+    const user = computed<UserState | null>(() => data.value?.user || null);
+
+    // const getUserData = async (): Promise<void> => {
+    //   user.value = data.value?.user || null;
+    // };
 
     const verifyEmail = async (
       email: LocationQueryValue | LocationQueryValue[],
-      token: number
+      token: number,
     ): Promise<ILogin | null> => {
       try {
         isLoading.value = true;
@@ -26,7 +29,7 @@ export const useAuthStore = defineStore(
               email,
               token,
             },
-          }
+          },
         );
 
         if (!res) {
@@ -55,8 +58,6 @@ export const useAuthStore = defineStore(
           },
         });
 
-        console.log("work");
-
         return true;
       } catch (error) {
         isError.value = error;
@@ -70,12 +71,11 @@ export const useAuthStore = defineStore(
       user,
       isLoading,
       isError,
-      getUserData,
       verifyEmail,
       register,
     };
   },
   {
     persist: true,
-  }
+  },
 );
