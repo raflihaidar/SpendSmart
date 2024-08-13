@@ -1,5 +1,6 @@
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
+import FacebookProvider from "next-auth/providers/facebook";
 import { NuxtAuthHandler } from "#auth";
 import { prisma } from "../../database/client";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
@@ -31,6 +32,7 @@ export default NuxtAuthHandler({
   callbacks: {
     jwt: ({ token, user }: any) => {
       if (user) {
+        console.log("user : ", user);
         token.id = user.id;
         token.name = user.name;
         token.username = user.username;
@@ -62,6 +64,22 @@ export default NuxtAuthHandler({
           username: profile.given_name,
           email: profile.email,
           image: profile.picture,
+        };
+      },
+    }),
+    // @ts-expect-error You need to use .default here for it to work during SSR. May be fixed via Vite at some point
+    FacebookProvider.default({
+      clientId: process.env.NUXT_FACEBOOK_ID,
+      clientSecret: process.env.NUXT_FACEBOOK_SECRET,
+      profile(profile: any) {
+        console.log("profile :", profile);
+        const { string: url } = profile.picture.data;
+        return {
+          id: profile.id,
+          name: profile.name,
+          username: profile.name.split(" ")[0],
+          email: profile.email,
+          image: url,
         };
       },
     }),
