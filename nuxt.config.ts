@@ -32,6 +32,9 @@ export default defineNuxtConfig({
 
     googleId: "",
     googleSecret: "",
+
+    facebookId: "",
+    facebookSecret: "",
   },
   auth: {
     isEnabled: true,
