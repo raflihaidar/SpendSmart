@@ -15,7 +15,7 @@ model User {
   password            String?           @db.VarChar(100)
   email               String           @unique @db.VarChar(100)
   emailVerified       DateTime?
-  image               String?
+  image               String?          @db.VarChar(255)
   financial_record_id String           @unique
   account             Account?
   sessions            Session[]
