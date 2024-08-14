@@ -1,5 +1,5 @@
 import { RESPONSE_CODE } from "~/server/app/common/code";
-import { TransactionInput } from "~/types/ITransction";
+import type { TransactionInput } from "~/types/ITransction";
 import { deleteMultipleTransaction } from "~/server/database/repositories/transactionRepositories";
 
 export default defineEventHandler(async (event) => {

@@ -1,44 +1,10 @@
-<template>
-  <div class="grid">
-    <input
-      :type="inputType"
-      autocomplete="off"
-      :id="id"
-      :placeholder="placeHolder"
-      class="border border-border rounded-xl outline-border p-3 text-sm w-full"
-      v-model="inputValue"
-      @input="handleInput($event)"
-    />
-    <div class="text-red-800 grid text-sm" v-if="errorMessage">
-      {{ errorMessage }}
-    </div>
-  </div>
-</template>
-
 <script setup lang="ts">
-import { useField } from "vee-validate";
-import { defineProps, defineEmits } from "vue";
-
-const props = defineProps({
-  inputType: {
-    type: String,
-    required: true,
-    default: "text",
-    validator(value: any) {
-      // The value must match one of these strings
-      return ["text", "email", "password", "number"].includes(value);
-    },
-  },
-  id: {
-    type: String,
-    required: true,
-  },
-  placeHolder: String,
-  modelValue: {
-    type: [String, Number, Boolean, null],
-    required: true,
-  },
-});
+const props = defineProps<{
+  inputType: "text" | "email" | "password" | "number";
+  id: string;
+  placeHolder: string;
+  modelValue: string | number | boolean | null;
+}>();
 
 const emit = defineEmits(["update:modelValue"]);
 
@@ -57,3 +23,20 @@ const handleInput = (event: Event) => {
   emit("update:modelValue", (event.target as HTMLInputElement).value);
 };
 </script>
+
+<template>
+  <div class="grid">
+    <input
+      :id="id"
+      v-model="inputValue"
+      :type="inputType"
+      autocomplete="off"
+      :placeholder="placeHolder"
+      class="border border-border rounded-xl outline-border p-3 text-sm w-full"
+      @input="handleInput($event)"
+    >
+    <div v-if="errorMessage" class="text-red-800 grid text-sm">
+      {{ errorMessage }}
+    </div>
+  </div>
+</template>

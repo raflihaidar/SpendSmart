@@ -14,6 +14,6 @@ definePageMeta({
     <section class="w-[50%] relative">
       <LoginForm />
     </section>
-    <section class="w-[50%] h-[100vh] bg-loginPage relative"></section>
+    <section class="w-[50%] h-[100vh] bg-loginPage relative"/>
   </div>
 </template>

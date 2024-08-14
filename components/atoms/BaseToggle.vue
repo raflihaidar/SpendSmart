@@ -1,5 +1,5 @@
 <script setup lang="ts">
-let isClick = ref(false);
+const isClick = ref(false);
 const toggle = () => {
   isClick.value = !isClick.value;
 };
@@ -14,6 +14,6 @@ const toggle = () => {
       class="w-4 h-4 rounded-full bg-white absolute top-[0.1rem] cursor-pointer transition-all"
       :class="isClick ? 'right-1 -translate-x-0' : 'left-1 translate-x-0'"
       @click="toggle"
-    ></div>
+    />
   </div>
 </template>

@@ -1,3 +1,24 @@
+<script setup lang="ts">
+const props = withDefaults(
+  defineProps<{
+    isError?: boolean;
+    message: string | null | undefined;
+  }>(),
+  {
+    isError: false,
+  }
+);
+
+const { isError, message } = toRefs(props);
+
+watch(
+  () => message.value,
+  (newValue: string) => {
+    console.log(newValue);
+  }
+);
+</script>
+
 <template>
   <div
     v-if="message"
@@ -9,21 +30,3 @@
     <p>{{ message }}</p>
   </div>
 </template>
-
-<script setup lang="ts">
-import { defineProps } from "vue";
-const props = defineProps({
-  isError: Boolean,
-  message: {
-    type: null as unknown as PropType<string>,
-    required: true,
-  },
-});
-
-watch(
-  () => props.message,
-  () => {
-    console.log("dari props ", props.message);
-  }
-);
-</script>

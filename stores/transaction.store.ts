@@ -16,7 +16,7 @@ export const useTransactionStore = defineStore("transaction", () => {
         acc.data.push(item?.total);
         return acc;
       },
-      { labels: [], data: [] }
+      { labels: [], data: [] },
     );
 
     return { labels, data };
@@ -34,7 +34,7 @@ export const useTransactionStore = defineStore("transaction", () => {
       }
 
       const response = await fetch(
-        `/api/category/${user.value.id}?typeId=${typeId}`
+        `/api/category/${user.value.id}?typeId=${typeId}`,
       );
 
       const data = await response.json();
@@ -64,7 +64,7 @@ export const useTransactionStore = defineStore("transaction", () => {
 
   const getTransaction = async (
     pageNumber: number = 1,
-    pageSize: number = 5
+    pageSize: number = 5,
   ): Promise<{
     totalPages: number;
     currentPages: number;
@@ -78,7 +78,7 @@ export const useTransactionStore = defineStore("transaction", () => {
       }
 
       const response = await fetch(
-        `/api/transaction/user?id=${user.value.id}&pageNumber=${pageNumber}&pageSize=${pageSize}`
+        `/api/transaction/user?id=${user.value.id}&pageNumber=${pageNumber}&pageSize=${pageSize}`,
       );
       const data = await response.json();
 
@@ -95,7 +95,7 @@ export const useTransactionStore = defineStore("transaction", () => {
   };
 
   const getDetailTransaction = async (
-    id: string
+    id: string,
   ): Promise<TransactionState | null> => {
     const transaction = await fetch(`/api/transaction/${id}`, {
       method: "GET",
@@ -188,7 +188,7 @@ export const useTransactionStore = defineStore("transaction", () => {
     }
   };
 
-  const editCategory = async (id: number, name: String) => {
+  const editCategory = async (id: number, name: string) => {
     try {
       const res = await $fetch(`/api/category/${id}`, {
         method: "PATCH",
@@ -220,7 +220,7 @@ export const useTransactionStore = defineStore("transaction", () => {
         return null;
       }
 
-      let result = transactions.value.filter((tx) => tx.id != id);
+      const result = transactions.value.filter((tx) => tx.id != id);
       transactions.value = result;
 
       return "Success";
@@ -297,7 +297,7 @@ export const useTransactionStore = defineStore("transaction", () => {
         `/api/transaction/type-group?id=${user.value.id}`,
         {
           method: "GET",
-        }
+        },
       );
 
       const data = await res.json();
@@ -347,7 +347,7 @@ export const useTransactionStore = defineStore("transaction", () => {
         `/api/transaction/search?userId=${user.value.id}&q=${payload}&pageNumber=${pageNumber}&pageSize=5`,
         {
           method: "GET",
-        }
+        },
       );
 
       const data = await res.json();

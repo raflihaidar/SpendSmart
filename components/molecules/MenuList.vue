@@ -1,7 +1,4 @@
 <script setup lang="ts">
-import { defineProps } from "vue";
-import type { PropType } from "vue"; // untuk memberikan tipe lebih spesifik pada array
-
 interface menuList {
   title: string;
   path: string;
@@ -9,17 +6,14 @@ interface menuList {
   isActive: boolean;
 }
 
-const props = defineProps({
-  menus: {
-    type: Array as PropType<Array<menuList>>,
-    required: true,
-  },
-});
+const props = defineProps<{
+  menus: menuList[];
+}>();
 
 const menus = reactive(props.menus);
 
 const handleMenuClick = (index: number) => {
-  props.menus.forEach((menu: any, i: number) => {
+  props.menus.forEach((menu: menuList, i: number) => {
     menu.isActive = i === index;
   });
 };
@@ -29,14 +23,14 @@ const handleMenuClick = (index: number) => {
   <div class="mt-5 grid gap-y-5">
     <BaseMenu
       v-for="(item, index) in menus"
-      @update:isActive="handleMenuClick(index)"
       :key="index"
-      :menuName="item.title"
-      :isActive="item.isActive"
+      :menu-name="item.title"
+      :is-active="item.isActive"
       :icon="item.icon"
       :path="item.path"
-      bgColor="bg-white"
+      bg-color="bg-white"
       color="text-color1"
+      @update:is-active="handleMenuClick(index)"
     />
   </div>
 </template>

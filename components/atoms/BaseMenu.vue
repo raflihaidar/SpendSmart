@@ -3,27 +3,14 @@ import { defineProps, defineEmits } from "vue";
 
 const route = useRoute();
 
-const props = defineProps({
-  menuName: {
-    type: String,
-    required: true,
-  },
-  path: {
-    type: String,
-    required: true,
-  },
-  icon: {
-    type: String,
-    required: true,
-  },
-  color: {
-    type: String,
-  },
-  bgColor: {
-    type: String,
-  },
-  isActive: Boolean,
-});
+defineProps<{
+  menuName: string;
+  path: string;
+  icon: string;
+  color: string;
+  bgColor: string;
+  isActive: boolean;
+}>();
 
 const emits = defineEmits(["update:isActive"]);
 
@@ -42,11 +29,11 @@ const isRouteActive = (menuPath: string) => {
 <template>
   <NuxtLink
     :to="path"
-    @click="handleClick"
     class="group flex items-center gap-x-2 pl-4 py-3 hover:rounded-2xl hover:shadow-sm hover:font-semibold cursor-pointer hover:bg-white transition-all"
     :class="
       isRouteActive(path) ? 'bg-white rounded-2xl shadow-sm' : 'bg-inherit'
     "
+    @click="handleClick"
   >
     <div
       :class="isRouteActive(path) ? 'bg-color1' : bgColor"

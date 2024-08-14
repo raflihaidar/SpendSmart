@@ -1,12 +1,7 @@
 <script setup lang="ts">
-import { defineProps, defineEmits } from "vue";
-
-const props = defineProps({
-  modelValue: {
-    type: String,
-    required: true,
-  },
-});
+defineProps<{
+  modelValue: string;
+}>();
 
 const emits = defineEmits(["update:modelValue"]);
 
@@ -21,10 +16,10 @@ const handleInput = (event: Event) => {
   >
     <input
       type="search"
-      @input="handleInput($event)"
       class="outline-none w-full border-none"
       :value="modelValue"
-    />
+      @input="handleInput($event)"
+    >
     <Icon name="ic:baseline-search" size="1.2rem" />
   </div>
 </template>

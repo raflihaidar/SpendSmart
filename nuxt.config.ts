@@ -3,6 +3,7 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   modules: [
     "@nuxtjs/device",
+    "@nuxt/eslint",
     [
       "@pinia/nuxt",
       {
@@ -14,23 +15,34 @@ export default defineNuxtConfig({
     "@sidebase/nuxt-auth",
     "@nuxt/icon",
     "@vee-validate/nuxt",
+    "nuxt-mailer",
   ],
-  piniaPersistedstate: {
-    cookieOptions: {
-      sameSite: "strict",
-    },
-    storage: "localStorage",
-  },
   css: ["~/assets/css/main.css"],
   runtimeConfig: {
-    authSecret: process.env.AUTH_SECRET,
-    googleId: process.env.GOOGLE_CLIENT_ID,
-    googleSecret: process.env.GOOGLE_SECRET_ID,
+    authSecret: process.env.NUXT_AUTH_SECRET,
+    mailerUser: process.env.NUXT_MAILER_USER,
+    mailerPass: process.env.NUXT_MAILER_PASS,
+    mailerLog: process.env.NUXT_MAILER_LOG,
+    mailerDriver: process.env.NUXT_MAILER_DRIVER,
+    mailerHost: process.env.NUXT_MAILER_HOST,
+    mailerPort: process.env.NUXT_MAILER_PORT,
+    mailerSmtpTls: process.env.NUXT_MAILER_SMTP_TLS,
+    mailerFromAddress: "",
+    mailerToAddress: "",
+
+    googleId: "",
+    googleSecret: "",
+
+    facebookId: "",
+    facebookSecret: "",
   },
   auth: {
-    baseURL: process.env.AUTH_ORIGIN,
+    isEnabled: true,
+    // baseURL: `https://spend-smart-one.vercel.app/api/auth`,
+    baseURL: "http://localhost:3000",
     provider: {
       type: "authjs",
+      trustHost: true,
     },
   },
   imports: {

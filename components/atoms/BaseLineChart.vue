@@ -1,18 +1,14 @@
-<script lang="ts" setup>
-import { defineProps } from "vue";
-
+<script setup lang="ts">
 interface SeriesItem {
   name: string;
   data: number[];
 }
-const props = defineProps({
-  data: {
-    type: Array as PropType<SeriesItem[]>,
-    required: true,
-  },
-});
 
-const { data } = props;
+const props = defineProps<{
+  data: SeriesItem[];
+}>();
+
+const { data } = toRefs(props);
 const series = ref<SeriesItem[]>([]);
 
 const options = ref({
@@ -38,7 +34,7 @@ const options = ref({
 const updateChart = () => {
   const months = getMonths();
   options.value.xaxis.categories = months;
-  series.value = data;
+  series.value = data.value;
   console.log("dari child : ", series.value);
 };
 
@@ -66,11 +62,6 @@ onMounted(updateChart);
 
 <template>
   <ClientOnly>
-    <apexchart
-      type="area"
-      height="350"
-      :options="options"
-      :series="series"
-    ></apexchart>
+    <apexchart type="area" height="350" :options="options" :series="series" />
   </ClientOnly>
 </template>

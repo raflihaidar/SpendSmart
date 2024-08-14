@@ -1,6 +1,6 @@
 import { prisma } from "~/server/database/client";
-import { Financial_Record, Transaction } from "@prisma/client";
-import { ITransaction } from "~/types/ITransction";
+import type { Financial_Record, Transaction } from "@prisma/client";
+import type { ITransaction } from "~/types/ITransction";
 import { toLocalISOString } from "~/utils/dateUtils";
 
 type FormattedTransaction = Omit<Transaction, "createdAt"> & {
@@ -270,7 +270,7 @@ export const deleteMultipleTransaction = async (
   incomes: number[],
   expenses: number[],
   userId: string
-): Promise<Number | null> => {
+): Promise<number | null> => {
   //ambil id transaksi
   const ids = transaction.map((t) => t.id);
 
