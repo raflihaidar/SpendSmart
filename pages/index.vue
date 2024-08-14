@@ -8,8 +8,6 @@ definePageMeta({
     middleware: "auth",
 });
 
-const { data } = useAuth();
-
 const transactionStore = useTransactionStore();
 const { getstat } = storeToRefs(transactionStore);
 const currentMonth = ref(months[getCurrentMount()]);
@@ -30,8 +28,6 @@ const handleTab = (item: string) => {
         currentTab.value = item;
     }
 };
-
-// seriesData.value = await transactionStore.getTotalTransaction();
 
 onMounted(async () => {
     await transactionStore.getTransactionCurrentMonth();

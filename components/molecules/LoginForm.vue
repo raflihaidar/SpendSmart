@@ -64,6 +64,7 @@ const socialAction = async (action: string) => {
                 size-icon="1.5rem"
                 class="flex-grow"
                 name-icon="Facebook"
+                @handler="socialAction('facebook')"
             />
         </div>
         <BaseSeperator text="Or continue with email" />
