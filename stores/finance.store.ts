@@ -1,5 +1,4 @@
 import { defineStore } from "pinia";
-import type { FinanceState } from "~/types/IFinance";
 
 export const useFinanceStore = defineStore("finance", () => {
   const balance = ref(0);
