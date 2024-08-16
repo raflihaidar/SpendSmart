@@ -27,7 +27,7 @@ const getUrl = computed(() => {
             <li
                 v-for="(item, index) in getUrl"
                 :key="index"
-                class="flex gap-x-2 items-center ml-2"
+                class="flex gap-x-2 items-center ml-2 max-sm:text-sm"
             >
                 <Icon name="ic:round-arrow-forward-ios" />
                 <NuxtLink

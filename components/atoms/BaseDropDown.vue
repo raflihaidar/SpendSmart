@@ -23,7 +23,7 @@ const props = withDefaults(
 const emit = defineEmits(["update:modelValue", "edit", "delete"]);
 
 const { datas, modelValue } = toRefs(props);
-const currentValue = ref("");
+const currentValue = ref("No items found, please add one");
 const isOpen = ref(false);
 const editingItemId = ref<number | null>(null);
 
@@ -65,7 +65,7 @@ watch(
                 currentValue.value = newDatas[0].name;
             }
         } else {
-            currentValue.value = "";
+            currentValue.value = "Add a category to proceed";
         }
     },
     {
@@ -146,5 +146,8 @@ watch(
             </li>
             <slot name="tools" />
         </ul>
+        <!-- <ul v-else>
+            <li>Add a category to proceed</li>
+        </ul> -->
     </div>
 </template>

@@ -32,7 +32,7 @@ const sendData = async (payload: any) => {
         payload.amount = null;
         payload.createdAt = null;
         payload.type_id = 1;
-        payload.category_id = null;
+        // payload.category_id = null;
         isError.value.status = false;
         isError.value.message = res || "";
     } catch (error: any) {
@@ -46,9 +46,9 @@ const addNewCategory = () => {
     inputDropDown.value = false;
 };
 
-onMounted(() => {
-    store.getCategories();
-    store.getType();
+onMounted(async () => {
+    await store.getCategories();
+    await store.getType();
 });
 
 watch(
@@ -63,14 +63,14 @@ watch(
 <template>
     <div class="px-5 py-10">
         <nav class="flex justify-between">
-            <section class="flex items-center gap-x-2 w-[20%]">
+            <section class="flex items-center gap-x-2 md:w-[20%]">
                 <Icon
                     name="material-symbols:arrow-left-alt"
                     size="1.5rem"
                     class="cursor-pointer"
                     @click="router.back"
                 />
-                <p class="font-bold">Add Transaction</p>
+                <p class="font-bold md:text-normal text-sm">Add Transaction</p>
             </section>
             <section
                 class="flex items-center gap-x-2 w-[30%] place-content-end"
@@ -78,7 +78,7 @@ watch(
                 <!-- <BaseButton icon="ic:outline-remove-red-eye" title="" /> -->
                 <BaseButton
                     event-type="button"
-                    title="Save and Continue"
+                    title="Save"
                     bg-color="bg-color1"
                     text-color="text-white"
                     width="w-40"

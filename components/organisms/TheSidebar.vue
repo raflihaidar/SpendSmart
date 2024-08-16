@@ -12,12 +12,6 @@ const menuList = reactive([
         path: "/transactions",
         isActive: false,
     },
-    {
-        title: "Settings",
-        icon: "ic:round-settings",
-        path: "/settings",
-        isActive: false,
-    },
 ]);
 </script>
 
