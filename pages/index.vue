@@ -37,10 +37,12 @@ onMounted(async () => {
 </script>
 
 <template>
-    <div class="w-full h-full p-3">
+    <div class="w-full h-full md:p-3">
         <TheFinancialOverview />
-        <div class="mt-10 flex justify-between jus gap-x-5">
-            <TheCard width="w-[40%]" title="Expense">
+        <div
+            class="mt-10 flex flex-col md:flex-row gap-y-5 md:justify-between gap-x-5"
+        >
+            <TheCard width="md:w-[40%] w-[90%]" title="Expense">
                 <template #card-content>
                     <p class="text-green-custom text-sm font-bold mt-2">
                         {{ currentMonth }} {{ year }}
@@ -56,7 +58,7 @@ onMounted(async () => {
                     </div>
                 </template>
             </TheCard>
-            <TheCard width="w-[55%]" title="Spending Report">
+            <TheCard width="md:w-[55%] w-[90%]" title="Spending Report">
                 <template #card-content>
                     <section class="flex justify-between items-center">
                         <ul
@@ -87,8 +89,13 @@ onMounted(async () => {
                 </template>
             </TheCard>
         </div>
-        <div class="mt-10 flex justify-between">
-            <TheCard width="w-[50%]" title="Transaction History">
+        <div
+            class="md:mt-10 mt-[1.25rem] flex gap-y-5 flex-col md:flex-row md:justify-between"
+        >
+            <TheCard
+                width="md:w-[50%] w-[90%] h-64"
+                title="Transaction History"
+            >
                 <template #card-content>
                     <div v-if="latestTransaction" class="my-3">
                         <div
@@ -188,7 +195,7 @@ onMounted(async () => {
                     </div>
                 </template>
             </TheCard>
-            <TheCard width="w-[45%] h-64" title="">
+            <TheCard width="md:w-[45%] w-[90%] h-64" title="">
                 <template #card-content>
                     <div
                         class="border-dotted border-4 rounded-lg border-black w-[90%] h-full mx-auto flex items-center justify-center cursor-pointer"
