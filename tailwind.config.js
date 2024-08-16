@@ -31,8 +31,10 @@ module.exports = {
         "span-sidebar": "span 3 / span 3",
       },
       gridColumn: {
-        "span-sidebar": "span 1 / span 2",
+        "span-sidebar": " 1 /  2",
+        "span-sidebar-mobile": "-1 / 2",
         "span-content": " 2 /  -2",
+        "span-content-mobile": "1 / -2",
       },
     },
   },

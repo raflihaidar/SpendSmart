@@ -1,25 +1,29 @@
 <script setup lang="ts">
 const menuList = reactive([
-  {
-    title: "Dashboard",
-    icon: "ic:round-house",
-    path: "/",
-    isActive: true,
-  },
-  {
-    title: "Transactions",
-    icon: "ic:baseline-credit-card",
-    path: "/transactions",
-    isActive: false,
-  },
+    {
+        title: "Dashboard",
+        icon: "ic:round-house",
+        path: "/",
+        isActive: true,
+    },
+    {
+        title: "Transactions",
+        icon: "ic:baseline-credit-card",
+        path: "/transactions",
+        isActive: false,
+    },
+    {
+        title: "Settings",
+        icon: "ic:round-settings",
+        path: "/settings",
+        isActive: false,
+    },
 ]);
 </script>
 
 <template>
-  <div>
-    <section class="w-[80%] mx-auto py-5">
-      <SidebarHeader :icon="'ic:baseline-savings'" title="spendSmart" />
-      <MenuList :menus="menuList" />
+    <section class="w-full mx-auto py-5 px-5">
+        <SidebarHeader :icon="'ic:baseline-savings'" title="spendSmart" />
+        <MenuList :menus="menuList" />
     </section>
-  </div>
 </template>
