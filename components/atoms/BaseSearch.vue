@@ -1,5 +1,6 @@
 <script setup lang="ts">
 defineProps<{
+    placeHolder: string;
     modelValue: string;
 }>();
 
@@ -18,6 +19,7 @@ const handleInput = (event: Event) => {
             type="search"
             class="outline-none w-full border-none"
             :value="modelValue"
+            :placeholder="placeHolder"
             @input="handleInput($event)"
         />
         <Icon name="ic:baseline-search" size="1.2rem" />

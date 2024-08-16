@@ -19,7 +19,7 @@ const openedModal = (event: Event) => {
                 id="notif-icon"
                 name="ic:round-notifications"
                 size="1.2rem"
-                class="cursor-pointer text-gray-500"
+                class="cursor-pointer text-gray-500 -mb-[0.35rem]"
                 @mouseenter="isDesktop ? (modal = true) : ''"
             />
             <div

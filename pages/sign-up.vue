@@ -19,7 +19,7 @@ definePageMeta({
             </div>
         </section>
         <section
-            class="absolute md:w-[25vw] w-full left-1/2 transform -translate-x-1/2 top-[70vh] -translate-y-1/2 bg-white rounded-lg px-10 py-5 shadow-lg"
+            class="absolute md:w-[25vw] w-full left-1/2 transform -translate-x-1/2 md:top-[70vh] top-10 md:-translate-y-1/2 bg-white rounded-lg px-10 py-5 shadow-lg"
         >
             <RegisterForm />
         </section>

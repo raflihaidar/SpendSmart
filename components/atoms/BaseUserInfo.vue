@@ -17,7 +17,7 @@ const openedModal = (event: Event) => {
     <div class="w-auto relative" @click="openedModal($event)">
         <div
             id="user-icon"
-            class="flex gap-x-1 cursor-pointer text-xs"
+            class="flex items-center gap-x-1 cursor-pointer text-xs -mb-1"
             @mouseenter="isDesktop ? (modal = true) : ''"
         >
             <Icon name="ic:round-person" size="1.2rem" class="text-gray-500" />

@@ -11,9 +11,9 @@ defineProps<Props>();
 
 <template>
     <div
-        class="flex justify-between items-center bg-white rounded-xl shadow-sm flex-grow p-3 capitalize gap-x-5"
+        class="w-full whitespace-nowrap flex justify-between items-center bg-white rounded-xl shadow-sm flex-grow p-3 capitalize gap-x-5"
     >
-        <section class="w-[70%]">
+        <section class="w-auto">
             <p
                 class="font-bold text-sm text-color3"
                 :class="$slots.optional ? 'mb-2' : ''"
@@ -36,7 +36,7 @@ defineProps<Props>();
             </p>
             <slot name="optional" />
         </section>
-        <section class="w-[30%">
+        <section class="w-auto">
             <div class="bg-color1 text-white pt-2 px-2 rounded-xl shadow-sm">
                 <Icon :name="icon" size="1.5rem" />
             </div>

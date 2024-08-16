@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const props = defineProps<{
+defineProps<{
     openSidebar: boolean;
 }>();
 
@@ -13,7 +13,7 @@ const openedSidebar = () => {
 </script>
 <template>
     <div class="flex justify-between items-center px-3">
-        <section class="pt-3 w-1/2 flex items-center">
+        <section class="flex items-center">
             <icon
                 name="ic:round-menu"
                 size="1.5rem"

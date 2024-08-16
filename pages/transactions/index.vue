@@ -227,7 +227,10 @@ watch(
         <section class="flex justify-between w-full max-sm:flex-col">
             <div class="flex w-auto gap-x-3 max-sm:w-full">
                 <!-- <BaseDatePicker /> -->
-                <BaseSearch v-model="searchQuery" />
+                <BaseSearch
+                    v-model="searchQuery"
+                    place-holder="Find a transaction"
+                />
                 <!-- <BaseDropDown
           :datas="type"
           width="w-full"
