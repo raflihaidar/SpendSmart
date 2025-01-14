@@ -1,6 +1,7 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   devtools: { enabled: true },
+
   modules: [
     "@nuxtjs/device",
     "@nuxt/eslint",
@@ -17,7 +18,9 @@ export default defineNuxtConfig({
     "@vee-validate/nuxt",
     "nuxt-mailer",
   ],
+
   css: ["~/assets/css/main.css"],
+
   runtimeConfig: {
     authSecret: process.env.NUXT_AUTH_SECRET,
     mailerUser: process.env.NUXT_MAILER_USER,
@@ -36,29 +39,35 @@ export default defineNuxtConfig({
     facebookId: "",
     facebookSecret: "",
   },
+
   auth: {
     isEnabled: true,
-    baseURL: `https://spend-smart-one.vercel.app/api/auth`,
-    // baseURL: "http://localhost:3000",
+    // baseURL: `https://spend-smart-one.vercel.app/api/auth`,
+    baseURL: "http://localhost:3000",
     provider: {
       type: "authjs",
       trustHost: true,
     },
   },
+
   imports: {
     autoImport: true,
     dirs: ["stores"],
   },
+
   components: [
     {
       path: "~/components",
       pathPrefix: false,
     },
   ],
+
   plugins: [
     {
       src: "~/plugins/apexChart.ts",
       mode: "client",
     },
   ],
+
+  compatibilityDate: "2025-01-14",
 });
