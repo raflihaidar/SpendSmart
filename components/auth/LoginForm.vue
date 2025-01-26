@@ -3,9 +3,7 @@ const email = ref("");
 const password = ref("");
 const isLoading = ref(false);
 
-const store = useAuthStore();
-
-const { data, signIn } = useAuth();
+const { signIn } = useAuth();
 const error = ref<string>("");
 
 const handleSignIn = async () => {
@@ -52,14 +50,14 @@ const socialAction = async (action: string) => {
         <h1 class="text-color1 font-bold text-3xl">Welcome Back</h1>
         <h3 class="text-sm">Select method to log in</h3>
         <div class="flex justify-center gap-x-5 mt-10">
-            <BaseSocialButton
+            <SocialButton
                 name="google"
                 size-icon="1.5rem"
                 class="flex-grow"
                 name-icon="Google"
                 @handler="socialAction('google')"
             />
-            <BaseSocialButton
+            <SocialButton
                 name="facebook"
                 size-icon="1.5rem"
                 class="flex-grow"
@@ -89,7 +87,7 @@ const socialAction = async (action: string) => {
                 />
             </section>
             <section class="flex gap-x-2">
-                <BaseToggle />
+                <AuthRememberToggle />
                 <BaseLabel name="Remember Me" />
             </section>
             <section class="grid gap-y-1">

@@ -10,10 +10,10 @@ definePageMeta({
 </script>
 
 <template>
-    <div class="md:flex w-full">
+    <section class="md:flex w-full">
         <section class="w-[50%] md:relative">
             <LoginForm />
         </section>
         <section class="w-[50%] h-[100vh] md:bg-loginPage md:relative" />
-    </div>
+    </section>
 </template>

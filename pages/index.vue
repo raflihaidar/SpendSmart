@@ -37,28 +37,12 @@ onMounted(async () => {
 </script>
 
 <template>
-    <div class="w-full h-full md:p-3">
-        <TheFinancialOverview />
-        <div
-            class="mt-10 flex flex-col md:flex-row gap-y-5 md:justify-between gap-x-5"
+    <section class="w-full h-full md:p-3">
+        <FinancialOverview />
+        <section
+            class="w-full mt-10 flex flex-col md:flex-row gap-y-5 md:justify-between gap-x-5"
         >
-            <TheCard width="md:w-[40%] w-[90%]" title="Expense">
-                <template #card-content>
-                    <p class="text-green-custom text-sm font-bold mt-2">
-                        {{ currentMonth }} {{ year }}
-                    </p>
-                    <div v-if="getstat.data.length <= 0">
-                        <BasePieChart :label="[]" :data="[1]" />
-                    </div>
-                    <div v-else>
-                        <BasePieChart
-                            :label="getstat.labels"
-                            :data="getstat.data"
-                        />
-                    </div>
-                </template>
-            </TheCard>
-            <TheCard width="md:w-[55%] w-[90%]" title="Spending Report">
+            <BaseCard width="md:w-full w-[90%]" title="Spending Report">
                 <template #card-content>
                     <section class="flex justify-between items-center">
                         <ul
@@ -78,22 +62,32 @@ onMounted(async () => {
                                 {{ item }}
                             </li>
                         </ul>
-                        <!-- <BaseButton
-              bg-color="bg-color1"
-              text-color="text-white"
-              title="View Report"
-              width="max-w-28"
-            /> -->
                     </section>
-                    <BaseLineChart :data="seriesData" />
+                    <LineChart :data="seriesData" />
                 </template>
-            </TheCard>
-        </div>
-        <div
-            class="md:mt-10 mt-[1.25rem] flex gap-y-5 flex-col md:flex-row md:justify-between"
+            </BaseCard>
+            <BaseCard width="md:w-[50%] w-[90%]" title="Expense">
+                <template #card-content>
+                    <p class="text-green-custom text-sm font-bold mt-2">
+                        {{ currentMonth }} {{ year }}
+                    </p>
+                    <div v-if="getstat.data.length <= 0">
+                        <PieChart :label="[]" :data="[1]" />
+                    </div>
+                    <div v-else>
+                        <PieChart
+                            :label="getstat.labels"
+                            :data="getstat.data"
+                        />
+                    </div>
+                </template>
+            </BaseCard>
+        </section>
+        <section
+            class="w-full mt-10 flex flex-col md:flex-row gap-y-5 md:justify-between gap-x-5"
         >
-            <TheCard
-                width="md:w-[50%] w-[90%] h-64"
+            <BaseCard
+                width="md:w-full w-[90%] h-64"
                 title="Transaction History"
             >
                 <template #card-content>
@@ -194,16 +188,7 @@ onMounted(async () => {
                         <p>No Transactions HIstory</p>
                     </div>
                 </template>
-            </TheCard>
-            <TheCard width="md:w-[45%] w-[90%] h-64" title="">
-                <template #card-content>
-                    <div
-                        class="border-dotted border-4 rounded-lg border-black w-[90%] h-full mx-auto flex items-center justify-center cursor-pointer"
-                    >
-                        <Icon name="ic:outline-add-circle" size="3rem" />
-                    </div>
-                </template>
-            </TheCard>
-        </div>
-    </div>
+            </BaseCard>
+        </section>
+    </section>
 </template>

@@ -25,11 +25,11 @@ const openSidebar = ref(false);
             />
 
             <!-- Konten Utama -->
-            <div
+            <main
                 class="bg-color2 md:col-span-content col-span-content-mobile row-start-2 row-end-3"
             >
                 <slot />
-            </div>
+            </main>
         </div>
         <div
             v-if="openSidebar"
