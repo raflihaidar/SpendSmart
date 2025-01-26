@@ -11,8 +11,9 @@ const openedSidebar = () => {
     emit("update:openSidebar", true);
 };
 </script>
+
 <template>
-    <div class="flex justify-between items-center px-3">
+    <header class="flex justify-between items-center px-3">
         <section class="flex items-center">
             <icon
                 name="ic:round-menu"
@@ -25,5 +26,5 @@ const openedSidebar = () => {
         <section class="w-[25%]">
             <UserPanel />
         </section>
-    </div>
+    </header>
 </template>

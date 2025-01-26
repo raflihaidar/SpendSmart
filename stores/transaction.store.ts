@@ -1,5 +1,4 @@
 import { defineStore } from "pinia";
-import { RESPONSE_CODE } from "~/server/app/common/code";
 import type { TransactionInput, TransactionState } from "~/types/ITransction";
 
 export const useTransactionStore = defineStore("transaction", () => {

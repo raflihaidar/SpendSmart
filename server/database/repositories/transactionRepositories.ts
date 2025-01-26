@@ -15,7 +15,7 @@ type PaginatedTransactions = {
 };
 
 export const createTransaction = async (
-  data: ITransaction
+  data: ITransaction,
 ): Promise<Transaction | null> => {
   try {
     return await prisma.$transaction(async (tx) => {
@@ -71,7 +71,7 @@ export const createTransaction = async (
 export const getTransactionsWithPagination = async (
   userId: string | undefined,
   pageNumber: number,
-  pageSize: number
+  pageSize: number,
 ): Promise<PaginatedTransactions | null> => {
   // Mendapatkan data yang akan diskip
   const offset = (pageNumber - 1) * pageSize;
@@ -111,7 +111,7 @@ export const getTransactionsWithPagination = async (
     (transaction) => ({
       ...transaction,
       createdAt: new Date(transaction.createdAt).toLocaleDateString("id-ID"),
-    })
+    }),
   );
 
   return {
@@ -124,7 +124,7 @@ export const getTransactionsWithPagination = async (
 
 export const updateTransaction = async (
   id: string | undefined,
-  data: ITransaction
+  data: ITransaction,
 ): Promise<Transaction | null> => {
   try {
     return await prisma.$transaction(async (tx) => {
@@ -209,7 +209,7 @@ export const updateTransaction = async (
 
 export const deleteTransaction = async (
   userId: string | undefined,
-  id: string | undefined
+  id: string | undefined,
 ): Promise<Financial_Record | null> => {
   try {
     const balance = await prisma.$transaction(async (tx) => {
@@ -257,7 +257,7 @@ export const deleteTransaction = async (
     return balance;
   } catch (error) {
     console.error(
-      `Failed to delete transaction or update financial record: ${error}`
+      `Failed to delete transaction or update financial record: ${error}`,
     );
     return null;
   } finally {
@@ -269,16 +269,19 @@ export const deleteMultipleTransaction = async (
   transaction: { id: string; category_id: number }[],
   incomes: number[],
   expenses: number[],
-  userId: string
+  userId: string,
 ): Promise<number | null> => {
   //ambil id transaksi
   const ids = transaction.map((t) => t.id);
 
   // Hitung jumlah transaksi per kategori yang akan dihapus
-  const categoryTransactionCount = transaction.reduce((acc, t) => {
-    acc[t.category_id] = (acc[t.category_id] || 0) + 1;
-    return acc;
-  }, {} as Record<number, number>);
+  transaction.reduce(
+    (acc, t) => {
+      acc[t.category_id] = (acc[t.category_id] || 0) + 1;
+      return acc;
+    },
+    {} as Record<number, number>,
+  );
 
   return await prisma.$transaction(async (tx) => {
     const transaction = await tx.transaction.deleteMany({
@@ -293,7 +296,7 @@ export const deleteMultipleTransaction = async (
     const totalIncome = incomes.reduce((sum, value) => sum + value, 0);
     const totalExpense = expenses.reduce((sum, value) => sum + value, 0);
 
-    const balance = await tx.user.update({
+    await tx.user.update({
       where: {
         id: userId,
       },
@@ -322,7 +325,7 @@ export const deleteMultipleTransaction = async (
 };
 
 export const getTransactionById = async (
-  id: string | undefined
+  id: string | undefined,
 ): Promise<FormattedTransaction | null> => {
   const transaction = await prisma.transaction.findUnique({
     where: {
@@ -364,7 +367,7 @@ export const getTransactionById = async (
 export const getTotalByCategory = async (
   year: number,
   month: number,
-  user_id: string
+  user_id: string,
 ): Promise<{ category: string; total: number }[]> => {
   const startDate = new Date(year, month - 1, 1);
   const endDate = new Date(year, month, 1);
@@ -405,17 +408,17 @@ export const getTotalByCategory = async (
         category: categoryName?.name,
         total: item._sum.amount,
       };
-    })
+    }),
   );
 
   return result.filter(
-    (item): item is { category: string; total: number } => item !== null
+    (item): item is { category: string; total: number } => item !== null,
   );
 };
 
 export const getTransactionByDate = async (
   year: number,
-  month: number
+  month: number,
 ): Promise<Transaction[] | null> => {
   const startDate = new Date(year, month - 1, 1);
   const endDate = new Date(year, month, 1);
@@ -462,7 +465,7 @@ export const getTotalByType = async (user_id: string) => {
 
       return result;
     },
-    {} as Record<number, Record<number, number>>
+    {} as Record<number, Record<number, number>>,
   );
 
   // Inisialisasi series data
@@ -556,7 +559,7 @@ export const searchTransactions = async (
   target: string,
   userId: string,
   pageNumber: number,
-  pageSize: number
+  pageSize: number,
 ): Promise<PaginatedTransactions | null> => {
   // Mendapatkan data yang akan diskip
   const offset = (pageNumber - 1) * pageSize;
