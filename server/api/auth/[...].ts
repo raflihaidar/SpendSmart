@@ -143,7 +143,24 @@ export default NuxtAuthHandler({
   },
   cookies: {
     sessionToken: {
-      name: "next-auth.session-token", // Menghilangkan __Secure- di production
+      name: "next-auth.session-token",
+      options: {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production", // Hanya aktifkan secure di production
+        sameSite: "lax",
+        path: "/",
+      },
+    },
+    callbackUrl: {
+      name: "next-auth.callback-url",
+      options: {
+        secure: process.env.NODE_ENV === "production", // Hanya aktifkan secure di production
+        sameSite: "lax",
+        path: "/",
+      },
+    },
+    csrfToken: {
+      name: "next-auth.csrf-token",
       options: {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production", // Hanya aktifkan secure di production
