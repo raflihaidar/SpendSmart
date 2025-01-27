@@ -43,7 +43,8 @@ export default defineNuxtConfig({
   auth: {
     isEnabled: true,
     baseURL: `https://spend-smart-one.vercel.app/api/auth`,
-    // baseURL: "http://localhost:3000",
+    originEnvKey: process.env.NUXT_AUTH_ORIGIN,
+    // baseURL: "http://localhost:3000/api/auth",
     provider: {
       type: "authjs",
       trustHost: true,
