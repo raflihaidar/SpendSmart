@@ -1,6 +1,6 @@
 <script setup lang="ts">
 definePageMeta({
-    middleware: ["auth", "guest"],
+    middleware: "auth",
     auth: {
         unauthenticatedOnly: true,
         navigateAuthenticatedTo: "/",
