@@ -141,4 +141,15 @@ export default NuxtAuthHandler({
     strategy: "jwt",
     maxAge: 24 * 60 * 60,
   },
+  cookies: {
+    sessionToken: {
+      name: "next-auth.session-token", // Menghilangkan __Secure- di production
+      options: {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production", // Hanya aktifkan secure di production
+        sameSite: "lax",
+        path: "/",
+      },
+    },
+  },
 });
