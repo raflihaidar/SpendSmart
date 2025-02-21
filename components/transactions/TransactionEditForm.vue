@@ -130,7 +130,7 @@ const handleEdit = async () => {
                 <BaseButton
                     event-type="button"
                     title="Update"
-                    bg-color="bg-color1"
+                    bg-color="bg-third"
                     width="w-28"
                     text-color="text-white"
                     @handler="handleEdit"

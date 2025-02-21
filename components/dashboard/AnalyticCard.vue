@@ -11,35 +11,37 @@ defineProps<Props>();
 
 <template>
     <div
-        class="w-full whitespace-nowrap flex justify-between items-center bg-white rounded-xl shadow-sm flex-grow p-3 capitalize gap-x-5"
+        class="w-full h-36 whitespace-nowrap flex flex-col flex-grow bg-secondary rounded-xl shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)] p-3 capitalize gap-x-5"
     >
-        <section class="w-auto">
-            <p
-                class="font-bold text-sm text-color3"
-                :class="$slots.optional ? 'mb-2' : ''"
+        <header class="flex items-start justify-between w-full">
+            <section class="flex items-center gap-x-2">
+                <h4 class="font-medium text-xs 2xl:text-base">{{ title }}</h4>
+                <Icon
+                    name="ic:outline-info"
+                    size="1.2rem"
+                    class="text-txt-secondary hover:text-charcoal cursor-pointer"
+                />
+            </section>
+
+            <section
+                class="text-txt-secondary hover:text-charcoal cursor-pointer"
             >
-                {{ title }}
-            </p>
-            <p
-                v-if="!$slots.optional"
-                class="font-bold"
-                :class="
-                    type == 'income'
-                        ? 'text-green-500'
-                        : type === 'expense'
-                          ? 'text-red-500'
-                          : 'text-black'
-                "
-            >
-                {{ value }}
-                <!-- <span class="text-green-500 text-sm ml-2">+15%</span> -->
-            </p>
-            <slot name="optional" />
-        </section>
-        <section class="w-auto">
-            <div class="bg-color1 text-white pt-2 px-2 rounded-xl shadow-sm">
-                <Icon :name="icon" size="1.5rem" />
-            </div>
+                <Icon name="ic:outline-more-horiz" size="1.5rem" />
+            </section>
+        </header>
+
+        <section class="mt-3">
+            <p class="font-semibold text-xl 2xl:text-2xl">{{ value }}</p>
+            <section class="text-xs 2xl:text-sm flex items-center gap-x-2 mt-2">
+                <div
+                    class="bg-green-pastel px-3 py-1 rounded-md text-third font-medium"
+                >
+                    3%
+                </div>
+                <p class="text-txt-secondary font-medium lowercase">
+                    vs last month
+                </p>
+            </section>
         </section>
     </div>
 </template>

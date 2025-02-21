@@ -12,20 +12,23 @@ module.exports = {
     extend: {
       colors: {
         loginPage: "#4FD1C5",
-        border: "#E2E8F0",
-        color1: "#4FD1C5",
-        color2: "#F8F9FA",
-        color3: "#A0AEC0",
-        "green-custom": "#48BB78",
+        border: "#D9D9D9",
+        main: "#F5F7F9",
+        secondary: "#FDFDFD",
+        third: "#00A00D",
+        fourth: "#EFF1F3",
+        charcoal: "#495057",
+        "txt-secondary": "#9B9EA1",
+        "green-pastel": "#E2F4E9",
       },
       fontFamily: {
         body: ["Poppins", "sans-serif"],
       },
       gridTemplateColumns: {
-        default: "250px 1fr",
+        default: "330px 1fr",
       },
       gridTemplateRows: {
-        default: "70px 1fr",
+        default: "1fr",
       },
       gridRow: {
         "span-sidebar": "span 3 / span 3",

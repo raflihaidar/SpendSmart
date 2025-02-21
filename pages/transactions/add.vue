@@ -1,6 +1,6 @@
 <script setup lang="ts">
 definePageMeta({
-    name: "add",
+    name: "Add Transaction",
 });
 
 const store = useTransactionStore();

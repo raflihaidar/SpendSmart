@@ -3,38 +3,46 @@ const openSidebar = ref(false);
 </script>
 
 <template>
-    <div>
+    <div
+        class="font-body bg-main grid md:grid-cols-default grid-cols-1 grid-rows-default overflow-hidden h-screen"
+    >
+        <!-- Sidebar -->
+        <TheSidebar />
+
+        <!-- Konten Utama -->
         <div
-            class="font-body grid md:grid-cols-default grid-cols-1 grid-rows-default h-[100vh] w-screen overflow-x-hidden max-sm:relative"
+            :class="openSidebar ? 'md:col-span-full' : 'md:col-span-content'"
+            class="bg-secondary py-4 px-8 relative z-50 rounded-t-lg shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)] col-span-content-mobile row-start-1 mt-3 mr-3 h-screen flex flex-col"
         >
-            <!-- Sidebar -->
-            <TheSidebar
-                class="bg-color2 md:left-0 md:col-span-sidebar row-span-sidebar max-sm:absolute z-20"
-                :class="
-                    !openSidebar
-                        ? 'max-sm:-left-full'
-                        : 'max-sm:left-0 max-sm:w-[60%] max-sm:top-0 max-sm:bottom-0'
-                "
-                @click="openSidebar = false"
-            />
-
-            <!-- Navbar -->
-            <TheNavbar
-                v-model:openSidebar="openSidebar"
-                class="bg-color2 md:col-start-2 col-end-3 col-start-1 row-start-1 row-end-2"
-            />
-
-            <!-- Konten Utama -->
-            <main
-                class="bg-color2 md:col-span-content col-span-content-mobile row-start-2 row-end-3"
+            <button
+                :class="openSidebar ? 'left-0' : '-left-4'"
+                class="text-txt-secondary z-50 absolute bg-secondary h-8 w-8 flex items-center justify-center rounded-full shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]"
+                @click="openSidebar = !openSidebar"
             >
+                <Icon
+                    v-if="!openSidebar"
+                    name="ci:arrow-circle-left"
+                    size="1.5rem"
+                />
+                <Icon v-else name="ci:arrow-circle-right" size="1.5rem" />
+            </button>
+            <TheNavbar />
+
+            <main class="flex-2 overflow-auto no-scrollbar">
                 <slot />
             </main>
         </div>
-        <div
-            v-if="openSidebar"
-            class="fixed top-0 left-0 w-screen h-screen bg-black opacity-35 z-10"
-            @click="openSidebar = false"
-        />
     </div>
 </template>
+
+<style scoped>
+/* Hilangkan scrollbar */
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+
+.no-scrollbar {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+}
+</style>

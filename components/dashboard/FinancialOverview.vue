@@ -30,15 +30,5 @@ onMounted(() => {
             type="expense"
             :icon="'ic:round-trending-down'"
         />
-        <!-- <AnalyticCard
-      title="savings"
-      value="0"
-      type="balance"
-      :icon="'ic:round-account-balance-wallet'"
-    >
-      <template #optional>
-        <BaseProgressBar />
-      </template>
-    </AnalyticCard> -->
     </div>
 </template>

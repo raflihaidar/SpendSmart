@@ -1,8 +1,5 @@
 <script setup lang="ts">
-interface SeriesItem {
-  name: string;
-  data: number[];
-}
+import type { SeriesItem } from "~/types/chart.type";
 
 const props = defineProps<{
   data: SeriesItem[];
@@ -35,7 +32,6 @@ const updateChart = () => {
   const months = getMonths();
   options.value.xaxis.categories = months;
   series.value = data.value;
-  console.log("dari child : ", series.value);
 };
 
 const getMonths = (): string[] => {

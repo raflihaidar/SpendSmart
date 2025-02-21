@@ -1,194 +1,139 @@
 <script setup lang="ts">
-interface latestTransactionType {
-    transactionsToday: any[];
-    transactionsYesterday: any[];
-}
 definePageMeta({
-    name: "dashboard",
+    name: "home",
     middleware: "auth",
 });
 
-const transactionStore = useTransactionStore();
-const { getstat } = storeToRefs(transactionStore);
-const currentMonth = ref(months[getCurrentMount()]);
-const year = ref(getCurrentYear());
-const dataList = ref([
-    "12 Months",
-    "3 Months",
-    "30 Days",
-    "7 Days",
-    "24 Hours",
+// Data Tab
+const tabDatas = shallowRef([
+    {
+        name: "Transaction History",
+        component: resolveComponent("TableTransactionHistory"),
+    },
+    {
+        name: "Saving Plan",
+        component: resolveComponent("TableSavingsPlan"),
+    },
+    {
+        name: "Schedule Payment",
+        component: resolveComponent("TableSchedulePayment"),
+    },
 ]);
-const latestTransaction = ref<latestTransactionType | null>(null);
-const currentTab = ref("12 Months");
-const seriesData = ref<any>([]);
 
-const handleTab = (item: string) => {
-    if (item != currentTab.value) {
-        currentTab.value = item;
-    }
+const currentTab = shallowRef(tabDatas.value[0]);
+
+const changeTab = (item: any) => {
+    currentTab.value = item;
 };
-
-onMounted(async () => {
-    await transactionStore.getTransactionCurrentMonth();
-    latestTransaction.value = await transactionStore.getLatestTransaction();
-    seriesData.value = await transactionStore.getTotalTransaction();
-});
 </script>
 
 <template>
-    <section class="w-full h-full md:p-3">
-        <FinancialOverview />
-        <section
-            class="w-full mt-10 flex flex-col md:flex-row gap-y-5 md:justify-between gap-x-5"
-        >
-            <BaseCard width="md:w-full w-[90%]" title="Spending Report">
-                <template #card-content>
-                    <section class="flex justify-between items-center">
-                        <ul
-                            class="text-xs font-bold mt-2 flex justify-start gap-x-5"
-                        >
-                            <li
-                                v-for="(item, index) in dataList"
-                                :key="index"
-                                :class="[
-                                    item == currentTab
-                                        ? 'text-green-custom'
-                                        : 'text-green-300',
-                                    'cursor-pointer',
-                                ]"
-                                @click="handleTab(item)"
-                            >
-                                {{ item }}
-                            </li>
-                        </ul>
-                    </section>
-                    <LineChart :data="seriesData" />
-                </template>
-            </BaseCard>
-            <BaseCard width="md:w-[50%] w-[90%]" title="Expense">
-                <template #card-content>
-                    <p class="text-green-custom text-sm font-bold mt-2">
-                        {{ currentMonth }} {{ year }}
+    <section>
+        <!-- Header -->
+        <section class="flex justify-between items-center">
+            <section>
+                <h1 class="text-xl 2xl:text-2xl mt-5">Overview Dashboard</h1>
+                <div
+                    class="text-txt-secondary flex items-center gap-x-2 text-xs 2xl:text-sm mt-2"
+                >
+                    <Icon name="ci:calendar-days" size="1.2rem" />
+                    <p class="font-medium">
+                        <span class="me-1">1 Agustus 2025</span>
+                        <span>-</span>
+                        <span class="ms-1">30 Agustus 2025</span>
                     </p>
-                    <div v-if="getstat.data.length <= 0">
-                        <PieChart :label="[]" :data="[1]" />
-                    </div>
-                    <div v-else>
-                        <PieChart
-                            :label="getstat.labels"
-                            :data="getstat.data"
-                        />
-                    </div>
-                </template>
-            </BaseCard>
+                </div>
+            </section>
+            <section class="w-[25vw] flex items-center justify-end gap-x-2">
+                <BaseButton
+                    border-color="border-border"
+                    event-type="button"
+                    width="w-24"
+                >
+                    <template #icon>
+                        <p class="text-xs 2xl:text-sm">August</p>
+                        <Icon name="ci:caret-down-md" size="2rem" />
+                    </template>
+                </BaseButton>
+                <BaseButton
+                    title="Export"
+                    bg-color="bg-third"
+                    text-color="text-white"
+                    event-type="button"
+                    width="w-24"
+                />
+            </section>
         </section>
-        <section
-            class="w-full mt-10 flex flex-col md:flex-row gap-y-5 md:justify-between gap-x-5"
-        >
-            <BaseCard
-                width="md:w-full w-[90%] h-64"
-                title="Transaction History"
-            >
-                <template #card-content>
-                    <div v-if="latestTransaction" class="my-3">
-                        <div
-                            v-if="
-                                latestTransaction.transactionsToday.length > 0
-                            "
-                        >
-                            <p class="text-color3 text-sm font-semibold">
-                                Today
-                            </p>
-                            <div
-                                v-for="(
-                                    item, index
-                                ) in latestTransaction.transactionsToday"
-                                :key="index"
-                                class="grid grid-cols-3 my-3 text-sm"
-                            >
-                                <p>{{ item.description }}</p>
-                                <span
-                                    :class="[
-                                        item.type_id == 1
-                                            ? 'bg-green-500'
-                                            : 'bg-red-500',
-                                        'font-bold',
-                                        'text-white',
-                                        'px-3 py-1',
-                                        'rounded-full',
-                                        'max-w-20',
-                                        'justify-self-center',
-                                    ]"
-                                >
-                                    <p>
-                                        {{
-                                            item.type_id == 1
-                                                ? "income"
-                                                : "expense"
-                                        }}
-                                    </p>
-                                </span>
-                                <p class="justify-self-end">
-                                    {{ formatCurrency(item.amount) }}
-                                </p>
-                            </div>
-                        </div>
-                        <div
-                            v-if="
-                                latestTransaction.transactionsYesterday &&
-                                latestTransaction.transactionsYesterday.length >
-                                    0
-                            "
-                            class="mt-5"
-                        >
-                            <p class="text-color3 text-sm font-semibold">
-                                Yesterday
-                            </p>
-                            <div
-                                v-for="(
-                                    item, index
-                                ) in latestTransaction.transactionsYesterday"
-                                :key="index"
-                                class="grid grid-cols-3 my-3 text-sm"
-                            >
-                                <p>{{ item.description }}</p>
-                                <span
-                                    :class="[
-                                        item.type_id == 1
-                                            ? 'bg-green-500'
-                                            : 'bg-red-500',
-                                        'font-bold',
-                                        'text-white',
-                                        'text-center',
-                                        'px-3 py-1',
-                                        'rounded-full',
-                                        'max-w-20',
-                                        'justify-self-center',
-                                    ]"
-                                >
-                                    <p>
-                                        {{
-                                            item.type_id == 1
-                                                ? "income"
-                                                : "expense"
-                                        }}
-                                    </p>
-                                </span>
-                                <p class="justify-self-end">
-                                    {{ formatCurrency(item.amount) }}
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                    <div
-                        v-else
-                        class="text-xl text-center font-bold top-[40%] relative text-red-500"
+        <!-- Header -->
+
+        <!-- Financial Overview -->
+        <section class="mt-7 px-1">
+            <FinancialOverview />
+        </section>
+        <!-- Financial Overview -->
+
+        <!-- Bottom Section -->
+        <section class="mt-7 flex w-full">
+            <!-- Money Analytics -->
+            <section class="bg-main w-[40%] px-5 py-3 rounded-lg">
+                <header class="flex items-center justify-between w-full">
+                    <section class="w-fit">
+                        <h4 class="font-medium">Money Analytics</h4>
+                    </section>
+                    <BaseButton
+                        width="w-28"
+                        event-type="button"
+                        bg-color="bg-secondary"
+                        border-radius="rounded-full"
                     >
-                        <p>No Transactions HIstory</p>
-                    </div>
-                </template>
-            </BaseCard>
+                        <template #icon>
+                            <p class="2xl:text-sm text-xs">Full Stats</p>
+                            <Icon
+                                name="ic:outline-arrow-outward"
+                                size="1.2rem"
+                            />
+                        </template>
+                    </BaseButton>
+                </header>
+
+                <section>
+                    <BarChart />
+                </section>
+            </section>
+            <!-- Money Analytics -->
+
+            <!-- Transction Overview -->
+            <section class="bg-secondary w-[60%] h-full p-3">
+                <nav class="w-full">
+                    <ul
+                        class="grid grid-cols-3 text-center text-[10px] 2xl:text-sm"
+                    >
+                        <li
+                            v-for="(item, index) in tabDatas"
+                            :key="index"
+                            class="text-sm pb-2 cursor-pointer hover:text-black hover:font-medium hover:border-b-2 hover:border-black transition-colors"
+                            :class="
+                                currentTab == item
+                                    ? 'font-medium text-black border-black border-b-2'
+                                    : 'font-normal text-txt-secondary border-border border-b'
+                            "
+                            @click="changeTab(item)"
+                        >
+                            {{ item.name }}
+                        </li>
+                    </ul>
+                </nav>
+                <section class="mt-10 w-full">
+                    <h3 class="text-base 2xl:text-xl">
+                        {{ currentTab.name }}
+                    </h3>
+                    <p class="text-sm mb-3">
+                        All your transactions are recorded
+                    </p>
+                    <component :is="currentTab.component" />
+                </section>
+            </section>
+            <!-- Transction Overview -->
         </section>
     </section>
 </template>

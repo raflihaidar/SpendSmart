@@ -174,7 +174,7 @@ watch(
 </script>
 
 <template>
-    <section class="bg-white shadow-sm rounded-xl h-full w-full px-5 py-10">
+    <section class="h-full w-full px-5 py-10">
         <section class="flex justify-between w-full max-sm:flex-col">
             <div class="flex w-auto gap-x-3 max-sm:w-full">
                 <BaseSearch
@@ -200,7 +200,7 @@ watch(
                         event-type="button"
                         title="Add"
                         width="max-w-28"
-                        bg-color="bg-color1"
+                        bg-color="bg-third"
                         text-color="text-white"
                         border-color="border-color3"
                         icon="ic:baseline-add"

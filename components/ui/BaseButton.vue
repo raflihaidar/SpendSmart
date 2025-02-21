@@ -4,18 +4,22 @@ interface buttonProps {
   icon?: string;
   sizeIcon?: string;
   width?: string;
+  height?: string;
   bgColor?: string;
   textColor?: string;
   borderColor?: string;
+  borderRadius?: string;
   eventType: "button" | "submit" | "reset" | undefined;
 }
 
 withDefaults(defineProps<buttonProps>(), {
   sizeIcon: "1.2rem",
   width: "w-full",
+  height: "h-10",
   bgColor: "bg-white",
   textColor: "text-black",
   borderColor: "border-none",
+  borderRadius: "rounded-lg",
   title: "",
   icon: "",
 });
@@ -31,7 +35,7 @@ const handleClick = () => {
 
 <template>
   <button
-    :class="`border ${borderColor} rounded-xl ${bgColor} flex items-center justify-center gap-x-1 p-3 font-semibold ${textColor} ${width} ${
+    :class="`border ${height} ${borderColor} ${borderRadius} ${bgColor} flex items-center justify-center gap-x-1 p-3 font-medium ${textColor} ${width} ${
       !$slots.icon ? 'block' : 'flex items-center '
     }`"
     @click="handleClick"
@@ -39,7 +43,7 @@ const handleClick = () => {
     <slot name="icon" />
     <Icon v-if="icon" :name="icon" :size="sizeIcon" />
     <div v-if="!$slots.icon">
-      <p v-if="title || icon" class="text-xs">{{ title }}</p>
+      <p v-if="title || icon" class="text-xs 2xl:text-sm">{{ title }}</p>
       <BaseSpinner v-else />
     </div>
   </button>

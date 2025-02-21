@@ -6,25 +6,15 @@ export const useFinanceStore = defineStore("finance", () => {
   const expense = ref(0);
 
   const formatedExpense = computed(() => {
-    if (expense.value == 0) {
-      return formatCurrency(expense.value);
-    }
-    return `-${formatCurrency(expense.value)}`;
+    return formatCurrency(expense.value);
   });
 
   const formatedIncome = computed(() => {
-    if (income.value == 0) {
-      return formatCurrency(income.value);
-    }
-    return `+${formatCurrency(income.value)}`;
+    return formatCurrency(income.value);
   });
 
   const formatedBalance = computed(() => {
-    if (balance.value <= 0) {
-      return `${formatCurrency(balance.value)}`;
-    }
-
-    return `+${formatCurrency(balance.value)}`;
+    return `${formatCurrency(balance.value)}`;
   });
 
   const getFinanceRecord = async (): Promise<void> => {
