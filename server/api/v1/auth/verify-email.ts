@@ -4,7 +4,7 @@ import {
   updateEmailVerified,
   verificationToken,
 } from "~/server/database/repositories/userRepositories";
-import { ILogin } from "~/types/IUser";
+import type { ILogin } from "~/types/IUser";
 
 export default defineEventHandler(async (event): Promise<ILogin | null> => {
   const { email, token } = getQuery(event);

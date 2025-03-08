@@ -2,7 +2,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import FacebookProvider from "next-auth/providers/facebook";
 import { NuxtAuthHandler } from "#auth";
-import { prisma } from "../../database/client";
+import { prisma } from "~/server/database/client";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { RESPONSE_CODE } from "~/server/app/common/code";
 import { compare } from "bcrypt";

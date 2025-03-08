@@ -79,7 +79,7 @@ watch(
                 <BaseButton
                     event-type="button"
                     title="Save"
-                    bg-color="bg-color1"
+                    bg-color="bg-third"
                     text-color="text-white"
                     width="w-40"
                     @handler="sendData(payload)"

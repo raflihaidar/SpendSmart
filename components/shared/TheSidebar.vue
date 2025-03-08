@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import Logo from "@/assets/images/logo.png";
-
+import Swal from "sweetalert2";
 const route = useRoute();
 const router = useRouter();
+const { signOut } = useAuth();
 
 const menuList = reactive([
     {
@@ -20,41 +21,41 @@ const menuList = reactive([
             },
         ],
     },
-    {
-        type: "Master",
-        childs: [
-            {
-                title: "Categories",
-                icon: "proicons:hash",
-                path: "/categories",
-            },
-            {
-                title: "Budgeting",
-                icon: "ci:chart-pie",
-                path: "/budgetings",
-            },
-            {
-                title: "Financials Goals",
-                icon: "ci:star",
-                path: "/financial-goals",
-            },
-        ],
-    },
-    {
-        type: "Support",
-        childs: [
-            {
-                title: "Settings",
-                icon: "ci:settings",
-                path: "/settings",
-            },
-            {
-                title: "Help & Center",
-                icon: "ci:circle-help",
-                path: "/help-center",
-            },
-        ],
-    },
+    // {
+    //     type: "Master",
+    //     childs: [
+    //         {
+    //             title: "Categories",
+    //             icon: "proicons:hash",
+    //             path: "/categories",
+    //         },
+    //         {
+    //             title: "Budgeting",
+    //             icon: "ci:chart-pie",
+    //             path: "/budgetings",
+    //         },
+    //         {
+    //             title: "Financials Goals",
+    //             icon: "ci:star",
+    //             path: "/financial-goals",
+    //         },
+    //     ],
+    // },
+    // {
+    //     type: "Support",
+    //     childs: [
+    //         {
+    //             title: "Settings",
+    //             icon: "ci:settings",
+    //             path: "/settings",
+    //         },
+    //         {
+    //             title: "Help & Center",
+    //             icon: "ci:circle-help",
+    //             path: "/help-center",
+    //         },
+    //     ],
+    // },
 ]);
 
 // Reactive state for the active route
@@ -71,6 +72,32 @@ const isRouteActive = (menuPath: string) => {
         return activeRoute.value === menuPath;
     }
     return activeRoute.value.startsWith(menuPath);
+};
+
+const handleLogout = () => {
+    const swalWithBootstrapButtons = Swal.mixin({
+        customClass: {
+            confirmButton:
+                "bg-red-500 text-white font-bold rounded-xl px-3 py-2",
+            cancelButton:
+                "bg-third text-white font-bold rounded-xl px-3 py-2 mr-3",
+        },
+        buttonsStyling: false,
+    });
+    swalWithBootstrapButtons
+        .fire({
+            title: "Are you sure?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "logout",
+            cancelButtonText: "cancel",
+            reverseButtons: true,
+        })
+        .then(async (result: any) => {
+            if (result.isConfirmed) {
+                await signOut();
+            }
+        });
 };
 </script>
 
@@ -150,7 +177,7 @@ const isRouteActive = (menuPath: string) => {
 
             <!-- User Profile -->
             <section
-                class="my-5 bg-secondary rounded-lg py-3 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)] w-[90%]"
+                class="my-5 absolute bottom-0 bg-secondary rounded-lg py-3 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)] w-[90%]"
             >
                 <section
                     class="flex px-2.5 pb-2 justify-between items-center border-b"
@@ -171,7 +198,9 @@ const isRouteActive = (menuPath: string) => {
                     class="px-2.5 pt-2 cursor-pointer text-sm text-txt-secondary flex items-center gap-x-2"
                 >
                     <Icon name="ic:outline-logout" size="1.5rem" />
-                    <p class="text-xs 2xl:text-sm">Logout</p>
+                    <p class="text-xs 2xl:text-sm" @click="handleLogout">
+                        Logout
+                    </p>
                 </section>
             </section>
             <!-- User Profile -->

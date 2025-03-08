@@ -9,9 +9,8 @@ import { hash } from "bcrypt";
 const prisma = new PrismaClient();
 
 export default defineEventHandler(async (event: H3Event) => {
-  const { name, username, email, password, confirm_password } = await readBody(
-    event
-  );
+  const { name, username, email, password, confirm_password } =
+    await readBody(event);
 
   // Check apakah ada inputan user yang kosong
   if (!email || !name || !password || !username) {
@@ -39,13 +38,6 @@ export default defineEventHandler(async (event: H3Event) => {
       username,
       password: hashedPassword,
       email,
-      financial_record: {
-        create: {
-          income: 0,
-          expense: 0,
-          balance: 0,
-        },
-      },
     },
   });
 

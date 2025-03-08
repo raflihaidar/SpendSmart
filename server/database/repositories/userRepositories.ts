@@ -1,8 +1,8 @@
 import { prisma } from "~/server/database/client";
-import { VerificationRequest, User } from "@prisma/client";
+import type { VerificationRequest, User } from "@prisma/client";
 
 export const updateEmailVerified = async (
-  email: string
+  email: string,
 ): Promise<User | null> => {
   // Update user untuk mengatur emailVerified menjadi sekarang
   const user = await prisma.user.update({
@@ -19,7 +19,7 @@ export const updateEmailVerified = async (
 
 export const verificationToken = async (
   email: string,
-  token: number
+  token: number,
 ): Promise<VerificationRequest | null> => {
   // Cari permintaan verifikasi yang valid
   const verificationRequest = await prisma.verificationRequest.findFirst({

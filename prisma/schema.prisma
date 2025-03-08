@@ -8,22 +8,43 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum WalletType {
+  CASH
+  BANK
+  BUSINESS
+  INVESTMENT
+  JOINT
+}
+
 model User {
-  id                  String           @id @default(uuid())
-  name            String           @unique @db.VarChar(100)
-  username            String           @unique @db.VarChar(20)
-  password            String?           @db.VarChar(100)
-  email               String           @unique @db.VarChar(100)
-  emailVerified       DateTime?
-  image               String?          @db.VarChar(255)
-  financial_record_id String           @unique
-  account             Account?
-  sessions            Session[]
-  transaction         Transaction[]
-  category            Category[]
-  financial_record    Financial_Record @relation(fields: [financial_record_id], references: [id])
+  id            String    @id @default(uuid())
+  name          String    @unique @db.VarChar(100)
+  username      String    @unique @db.VarChar(20)
+  password      String?   @db.VarChar(100)
+  email         String    @unique @db.VarChar(100)
+  emailVerified DateTime?
+  image         String?   @db.VarChar(255)
+  account       Account?
+  sessions      Session[]
+  Wallet        Wallet[]
 
   @@map("users")
+}
+
+model Wallet {
+  id                  String           @id @default(uuid())
+  name                String           @db.VarChar(100)
+  type                WalletType       @default(CASH)
+  financial_record_id String           @unique
+  user_id             String
+  Financial_Record    Financial_Record @relation(fields: [financial_record_id], references: [id])
+  User                User             @relation(fields: [user_id], references: [id])
+  Transaction         Transaction[]
+  SavingPlan          SavingPlan[]
+  Category            Category[]
+  SubCategory         SubCategory[]
+
+  @@map("wallets")
 }
 
 model Financial_Record {
@@ -31,8 +52,9 @@ model Financial_Record {
   income    Int      @default(0)
   expense   Int      @default(0)
   balance   Int      @default(0)
-  updatedAt DateTime  @default(now())
-  user      User?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  Wallet    Wallet?
 
   @@map("financial_records")
 }
@@ -43,16 +65,26 @@ model Transaction {
   amount      Int
   createdAt   DateTime @db.Date
   type_id     Int
-  user_id     String   @db.VarChar(255)
   category_id Int
-  category    Category @relation(fields : [category_id], references : [id])
+  wallet_id   String
+  category    Category @relation(fields: [category_id], references: [id])
   type        Type     @relation(fields: [type_id], references: [id])
-  user        User     @relation(fields: [user_id], references: [id])
+  wallet      Wallet   @relation(fields: [wallet_id], references: [id])
 
   @@index([type_id], map: "transactions_type_id_fkey")
   @@index([category_id], map: "transactions_category_id_fkey")
-  @@index([user_id], map: "transactions_user_id_fkey")
+  @@index([wallet_id], map: "transactions_wallet_id_fkey")
   @@map("transactions")
+}
+
+model SavingPlan {
+  id             String @id
+  name           String @db.VarChar(100)
+  nominal_target Int?   @default(0)
+  wallet_id      String
+  wallet         Wallet @relation(fields: [wallet_id], references: [id])
+
+  @@map("saving_plans")
 }
 
 model Type {
@@ -65,18 +97,30 @@ model Type {
 }
 
 model Category {
-  id      Int               @id @default(autoincrement())
-  name    String            @db.VarChar(20)
-  type_id Int
-  user_id String
-  type    Type              @relation(fields: [type_id], references: [id])
-  user    User              @relation(fields: [user_id], references: [id])
+  id          Int           @id @default(autoincrement())
+  name        String        @db.VarChar(20)
+  type_id     Int
+  wallet_id   String
+  type        Type          @relation(fields: [type_id], references: [id])
+  wallet      Wallet        @relation(fields: [wallet_id], references: [id])
   transaction Transaction[]
+  SubCategory SubCategory[]
 
   @@index([type_id], map: "categories_type_id_fkey")
+  @@index([wallet_id], map: "categories_wallet_id_fkey")
   @@map("categories")
 }
 
+model SubCategory {
+  id          Int      @id @default(autoincrement())
+  name        String   @db.VarChar(20)
+  category_id Int
+  wallet_id   String
+  category    Category @relation(fields: [category_id], references: [id])
+  wallet      Wallet   @relation(fields: [wallet_id], references: [id])
+
+  @@map("sub_categories")
+}
 
 model Account {
   id                Int      @id @default(autoincrement())
@@ -93,7 +137,7 @@ model Account {
   session_state     String?
   token_type        String?
   type              String
-  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade, map: "Account_userId_fkey")
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade, map: "Account_userId_fkey")
 
   @@unique([provider, providerAccountId], map: "Account_provider_providerAccountId_key")
   @@map("accounts")
@@ -120,5 +164,6 @@ model Session {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
   user         User     @relation(fields: [userId], references: [id])
+
   @@map("sessions")
 }
